@@ -31,10 +31,16 @@ export function formatDisplayDate(): string {
   return `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}`;
 }
 
-export function getDayCount(startDate: number): number {
-  const todayMs = new Date().setHours(0, 0, 0, 0);
+export function getDayCount(startDate: number, endDate?: number): number {
+  const endMs = endDate
+    ? new Date(endDate * 1000).setHours(0, 0, 0, 0)
+    : new Date().setHours(0, 0, 0, 0);
   const startMs = new Date(startDate * 1000).setHours(0, 0, 0, 0);
-  return Math.floor((todayMs - startMs) / 86400000) + 1;
+  return Math.floor((endMs - startMs) / 86400000) + 1;
+}
+
+export function isWithinGraceWindow(ts: number): boolean {
+  return Math.floor(Date.now() / 1000) - ts < 300;
 }
 
 export function formatTimestamp(ts: number): string {

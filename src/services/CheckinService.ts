@@ -25,4 +25,8 @@ export class CheckinService {
   getCheckinsByDate(date: string): Checkin[] {
     return this.repo.findByDate(date);
   }
+
+  deleteCheckin(id: number): void {
+    this.repo.delete(id);
+  }
 }

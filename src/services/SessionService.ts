@@ -27,4 +27,8 @@ export class SessionService {
   getSessionsByDateRange(from: string, to: string): Session[] {
     return this.repo.findByDateRange(from, to);
   }
+
+  deleteSession(id: number): void {
+    this.repo.delete(id);
+  }
 }

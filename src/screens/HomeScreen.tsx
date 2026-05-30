@@ -23,6 +23,7 @@ import {
   formatTimestamp,
   getDateNDaysAgo,
   getLocalDateString,
+  isWithinGraceWindow,
 } from '../utils/date';
 import type {Session, Checkin, MeditationObject} from '../types';
 import type {RootStackParamList} from '../navigation/types';
@@ -50,12 +51,12 @@ function useHomeData() {
     }, []),
   );
 
-  return {sessions, checkins, streak, currentObject};
+  return {sessions, setSessions, checkins, setCheckins, streak, currentObject};
 }
 
 export function HomeScreen() {
   const navigation = useNavigation<Nav>();
-  const {sessions, checkins, streak, currentObject} = useHomeData();
+  const {sessions, setSessions, checkins, setCheckins, streak, currentObject} = useHomeData();
 
   const isFirstRun =
     sessions.length === 0 &&
@@ -109,6 +110,15 @@ export function HomeScreen() {
             onCompletePress={() =>
               navigation.navigate('After', {sessionId: s.id})
             }
+            onDelete={
+              s.stage === 'complete' && isWithinGraceWindow(s.updated_at)
+                ? () => {
+                    sessionService.deleteSession(s.id);
+                    streakService.recomputeAndCache();
+                    setSessions(sessionService.getTodaysSessions());
+                  }
+                : undefined
+            }
           />
         ))}
         <SessionCTA status={todayStatus} onBegin={beginEntry} />
@@ -129,6 +139,14 @@ export function HomeScreen() {
             time={slot.time}
             checkin={checkins[slot.type]}
             onPress={() => openCheckin(slot.type)}
+            onDelete={
+              checkins[slot.type] && isWithinGraceWindow(checkins[slot.type]!.created_at)
+                ? () => {
+                    checkinService.deleteCheckin(checkins[slot.type]!.id);
+                    setCheckins(checkinService.getTodayCheckins());
+                  }
+                : undefined
+            }
           />
         ))}
       </ScrollView>
@@ -271,10 +289,12 @@ function SessionCard({
   session,
   objectName,
   onCompletePress,
+  onDelete,
 }: {
   session: Session;
   objectName: string;
   onCompletePress: () => void;
+  onDelete?: () => void;
 }) {
   const isComplete = session.stage === 'complete';
   const iconBg = isComplete ? Colors.mossPale : Colors.clayPale;
@@ -317,6 +337,11 @@ function SessionCard({
           <Text style={styles.completeInlineText}>Complete entry →</Text>
         </TouchableOpacity>
       )}
+      {onDelete && (
+        <TouchableOpacity style={styles.deleteInline} onPress={onDelete}>
+          <Text style={styles.deleteInlineText}>Delete entry</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -347,30 +372,41 @@ function CheckinRow({
   time,
   checkin,
   onPress,
+  onDelete,
 }: {
   label: string;
   time: string;
   checkin: Checkin | null;
   onPress: () => void;
+  onDelete?: () => void;
 }) {
   const done = checkin !== null;
   return (
-    <TouchableOpacity style={styles.checkinRow} onPress={onPress}>
-      <View style={styles.checkinLeft}>
-        <View style={styles.checkinIconBg}>
-          <Text style={styles.checkinIconText}>
-            {label === 'Morning' ? '☀' : label === 'Afternoon' ? '☁' : '🌙'}
-          </Text>
+    <View style={styles.checkinRowWrap}>
+      <TouchableOpacity style={styles.checkinRow} onPress={onPress}>
+        <View style={styles.checkinLeft}>
+          <View style={styles.checkinIconBg}>
+            <Text style={styles.checkinIconText}>
+              {label === 'Morning' ? '☀' : label === 'Afternoon' ? '☁' : '🌙'}
+            </Text>
+          </View>
+          <View>
+            <Text style={styles.checkinName}>{label}</Text>
+            <Text style={styles.checkinTime}>{time}</Text>
+          </View>
         </View>
-        <View>
-          <Text style={styles.checkinName}>{label}</Text>
-          <Text style={styles.checkinTime}>{time}</Text>
+        <View style={styles.checkinRight}>
+          {onDelete && (
+            <TouchableOpacity onPress={onDelete} hitSlop={{top:8,bottom:8,left:8,right:8}}>
+              <Text style={styles.checkinDeleteText}>Delete</Text>
+            </TouchableOpacity>
+          )}
+          <View style={[styles.checkinCircle, done && styles.checkinCircleDone]}>
+            {done && <Text style={styles.checkinCheck}>✓</Text>}
+          </View>
         </View>
-      </View>
-      <View style={[styles.checkinCircle, done && styles.checkinCircleDone]}>
-        {done && <Text style={styles.checkinCheck}>✓</Text>}
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -568,8 +604,17 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.stone100,
   },
   completeInlineText: {fontSize: 13, fontFamily: 'Newsreader-Medium', color: Colors.moss},
+  deleteInline: {
+    marginTop: 7,
+    paddingTop: 7,
+    borderTopWidth: 1,
+    borderTopColor: Colors.stone100,
+    alignItems: 'flex-start',
+  },
+  deleteInlineText: {fontSize: 12, fontFamily: 'Newsreader-Regular', color: Colors.clay},
 
   // Check-in row
+  checkinRowWrap: {marginBottom: 7},
   checkinRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -580,9 +625,10 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     paddingVertical: 11,
     paddingHorizontal: 13,
-    marginBottom: 7,
   },
   checkinLeft: {flexDirection: 'row', alignItems: 'center', gap: 10},
+  checkinRight: {flexDirection: 'row', alignItems: 'center', gap: 10},
+  checkinDeleteText: {fontSize: 12, fontFamily: 'Newsreader-Regular', color: Colors.clay},
   checkinIconBg: {width: 32, height: 32, justifyContent: 'center', alignItems: 'center'},
   checkinIconText: {fontSize: 16},
   checkinName: {...Typography.label, color: Colors.inkSoft},

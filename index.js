@@ -10,9 +10,28 @@ import {createMMKV} from 'react-native-mmkv';
 
 // Background notification handler — must be registered outside React
 notifee.onBackgroundEvent(async ({type, detail}) => {
-  if (type !== EventType.PRESS) return;
   const data = detail.notification?.data ?? {};
   const {checkinType, kind, sessionId} = data;
+
+  if (type === EventType.ACTION_PRESS) {
+    const actionId = detail.pressAction?.id;
+    if (kind === 'incomplete_session' && sessionId) {
+      if (actionId === 'discard') {
+        // Directly delete via DB — no navigation needed
+        const {getDb} = require('./src/db');
+        getDb().executeSync('DELETE FROM sessions WHERE id = ?', [Number(sessionId)]);
+      } else if (actionId === 'complete') {
+        const storage = createMMKV({id: 'journal'});
+        storage.set(
+          'pending.navigation',
+          JSON.stringify({screen: 'After', params: {sessionId: Number(sessionId)}}),
+        );
+      }
+    }
+    return;
+  }
+
+  if (type !== EventType.PRESS) return;
   if (!checkinType && !kind) return;
 
   // Store pending navigation for App.tsx to pick up on mount

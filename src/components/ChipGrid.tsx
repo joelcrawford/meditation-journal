@@ -40,7 +40,8 @@ export function ChipGrid({listName, selectedIds, onToggle, columns = 2}: Props) 
                   style={[
                     styles.chipText,
                     active ? styles.chipTextActive : styles.chipTextInactive,
-                  ]}>
+                  ]}
+                  maxFontSizeMultiplier={1.4}>
                   {chip.label}
                 </Text>
               </TouchableOpacity>

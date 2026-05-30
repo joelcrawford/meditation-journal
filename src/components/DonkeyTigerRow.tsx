@@ -23,7 +23,8 @@ export function DonkeyTigerRow({donkeyLabel, tigerLabel, value, onToggle}: Props
             styles.poleText,
             styles.poleTextLeft,
             value === 'donkey' && styles.donkeyActiveText,
-          ]}>
+          ]}
+          maxFontSizeMultiplier={1.4}>
           {donkeyLabel}
         </Text>
       </TouchableOpacity>
@@ -37,7 +38,8 @@ export function DonkeyTigerRow({donkeyLabel, tigerLabel, value, onToggle}: Props
             styles.poleText,
             styles.poleTextRight,
             value === 'tiger' && styles.tigerActiveText,
-          ]}>
+          ]}
+          maxFontSizeMultiplier={1.4}>
           {tigerLabel}
         </Text>
       </TouchableOpacity>

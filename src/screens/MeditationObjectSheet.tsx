@@ -153,7 +153,7 @@ export function MeditationObjectSheet() {
                   </View>
                   <View style={styles.daysBadge}>
                     <Text style={styles.daysBadgeText}>
-                      {getDayCount(obj.start_date)} days
+                      {getDayCount(obj.start_date, obj.ended_date)} days
                     </Text>
                   </View>
                 </View>
