@@ -19,6 +19,7 @@ import {StagePips} from '../components/StagePips';
 import {CHIP_LIST} from '../constants/chips';
 import {chipMap} from '../db';
 import {sessionService, meditationObjectService, streakService} from '../services';
+import {notificationService} from '../services/NotificationService';
 import {storage, STORAGE_KEYS} from '../storage/mmkv';
 import {formatTimestamp} from '../utils/date';
 import type {RootStackParamList} from '../navigation/types';
@@ -68,6 +69,7 @@ export function AfterScreen() {
   const [lostText, setLostText] = useState('');
 
   function handleSave() {
+    notificationService.cancelIncompleteSessionFollowUp(sessionId);
     sessionService.completeAfterEntry(sessionId, {
       duration_seconds: durationSeconds,
       during_distractions: distractionIds.length

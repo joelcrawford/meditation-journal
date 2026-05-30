@@ -10,15 +10,15 @@
 		07CD7FFA51DE5486085787F3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		0C80B921A6F3F58F76C31292 /* libPods-MeditationJournal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-MeditationJournal.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		4E08FAB6A2EA47BCB6072F20 /* Newsreader-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 955CF69A624949769489CFE7 /* Newsreader-Medium.ttf */; };
+		72F9BC2D92714575806E9211 /* Fraunces-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 75B28EB8779B4EC5AA39F89D /* Fraunces-Regular.ttf */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		FBAC751825AE4F0386CA8C2F /* Newsreader-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AC1E72A921424EC1906E66A7 /* Newsreader-Regular.ttf */; };
-		CBEE570AFA2844B5815158D0 /* Newsreader-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 708E3806F2CE432CAA6286CC /* Newsreader-SemiBold.ttf */; };
-		72F9BC2D92714575806E9211 /* Fraunces-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 75B28EB8779B4EC5AA39F89D /* Fraunces-Regular.ttf */; };
-		D4EAD60893B94B899748E1A0 /* Fraunces-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ADB6ED72198A437D87CBD334 /* Fraunces-SemiBold.ttf */; };
-		4E08FAB6A2EA47BCB6072F20 /* Newsreader-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 955CF69A624949769489CFE7 /* Newsreader-Medium.ttf */; };
-		AB0E4D2F49C440E6909F68FC /* Newsreader-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 730DA09D27C3416AB13006B7 /* Newsreader-Italic.ttf */; };
 		927D110D096D45CCBD8F69B1 /* Fraunces-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C3E78DB6379546D8898338F1 /* Fraunces-Italic.ttf */; };
+		AB0E4D2F49C440E6909F68FC /* Newsreader-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 730DA09D27C3416AB13006B7 /* Newsreader-Italic.ttf */; };
+		CBEE570AFA2844B5815158D0 /* Newsreader-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 708E3806F2CE432CAA6286CC /* Newsreader-SemiBold.ttf */; };
+		D4EAD60893B94B899748E1A0 /* Fraunces-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ADB6ED72198A437D87CBD334 /* Fraunces-SemiBold.ttf */; };
+		FBAC751825AE4F0386CA8C2F /* Newsreader-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AC1E72A921424EC1906E66A7 /* Newsreader-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,16 +29,16 @@
 		3B4392A12AC88292D35C810B /* Pods-MeditationJournal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MeditationJournal.debug.xcconfig"; path = "Target Support Files/Pods-MeditationJournal/Pods-MeditationJournal.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-MeditationJournal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MeditationJournal.release.xcconfig"; path = "Target Support Files/Pods-MeditationJournal/Pods-MeditationJournal.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-MeditationJournal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MeditationJournal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		708E3806F2CE432CAA6286CC /* Newsreader-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-SemiBold.ttf"; path = "../assets/fonts/Newsreader-SemiBold.ttf"; sourceTree = "<group>"; };
+		730DA09D27C3416AB13006B7 /* Newsreader-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-Italic.ttf"; path = "../assets/fonts/Newsreader-Italic.ttf"; sourceTree = "<group>"; };
+		75B28EB8779B4EC5AA39F89D /* Fraunces-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Fraunces-Regular.ttf"; path = "../assets/fonts/Fraunces-Regular.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MeditationJournal/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = MeditationJournal/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		955CF69A624949769489CFE7 /* Newsreader-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-Medium.ttf"; path = "../assets/fonts/Newsreader-Medium.ttf"; sourceTree = "<group>"; };
+		AC1E72A921424EC1906E66A7 /* Newsreader-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-Regular.ttf"; path = "../assets/fonts/Newsreader-Regular.ttf"; sourceTree = "<group>"; };
+		ADB6ED72198A437D87CBD334 /* Fraunces-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Fraunces-SemiBold.ttf"; path = "../assets/fonts/Fraunces-SemiBold.ttf"; sourceTree = "<group>"; };
+		C3E78DB6379546D8898338F1 /* Fraunces-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Fraunces-Italic.ttf"; path = "../assets/fonts/Fraunces-Italic.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		AC1E72A921424EC1906E66A7 /* Newsreader-Regular.ttf */ = {isa = PBXFileReference; name = "Newsreader-Regular.ttf"; path = "../assets/fonts/Newsreader-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		708E3806F2CE432CAA6286CC /* Newsreader-SemiBold.ttf */ = {isa = PBXFileReference; name = "Newsreader-SemiBold.ttf"; path = "../assets/fonts/Newsreader-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		75B28EB8779B4EC5AA39F89D /* Fraunces-Regular.ttf */ = {isa = PBXFileReference; name = "Fraunces-Regular.ttf"; path = "../assets/fonts/Fraunces-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		ADB6ED72198A437D87CBD334 /* Fraunces-SemiBold.ttf */ = {isa = PBXFileReference; name = "Fraunces-SemiBold.ttf"; path = "../assets/fonts/Fraunces-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		955CF69A624949769489CFE7 /* Newsreader-Medium.ttf */ = {isa = PBXFileReference; name = "Newsreader-Medium.ttf"; path = "../assets/fonts/Newsreader-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		730DA09D27C3416AB13006B7 /* Newsreader-Italic.ttf */ = {isa = PBXFileReference; name = "Newsreader-Italic.ttf"; path = "../assets/fonts/Newsreader-Italic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		C3E78DB6379546D8898338F1 /* Fraunces-Italic.ttf */ = {isa = PBXFileReference; name = "Fraunces-Italic.ttf"; path = "../assets/fonts/Fraunces-Italic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,17 +104,8 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				3B4392A12AC88292D35C810B /* Pods-MeditationJournal.debug.xcconfig */,
-				5709B34CF0A7D63546082F79 /* Pods-MeditationJournal.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		8A1EB19D8A9D4173BE530AB9 /* Resources */ = {
-			isa = "PBXGroup";
+			isa = PBXGroup;
 			children = (
 				AC1E72A921424EC1906E66A7 /* Newsreader-Regular.ttf */,
 				708E3806F2CE432CAA6286CC /* Newsreader-SemiBold.ttf */,
@@ -125,8 +116,17 @@
 				C3E78DB6379546D8898338F1 /* Fraunces-Italic.ttf */,
 			);
 			name = Resources;
-			sourceTree = "<group>";
 			path = "";
+			sourceTree = "<group>";
+		};
+		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3B4392A12AC88292D35C810B /* Pods-MeditationJournal.debug.xcconfig */,
+				5709B34CF0A7D63546082F79 /* Pods-MeditationJournal.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -310,7 +310,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.havehopeyo.meditationjournal";
+				PRODUCT_BUNDLE_IDENTIFIER = com.havehopeyo.meditationjournal;
 				PRODUCT_NAME = MeditationJournal;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -326,7 +326,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5469PA59T3;
 				INFOPLIST_FILE = MeditationJournal/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -339,9 +341,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 5469PA59T3;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.havehopeyo.meditationjournal";
+				PRODUCT_BUNDLE_IDENTIFIER = com.havehopeyo.meditationjournal;
 				PRODUCT_NAME = MeditationJournal;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;

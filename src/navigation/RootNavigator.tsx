@@ -38,7 +38,11 @@ export function RootNavigator() {
           contentStyle: {backgroundColor: Colors.paperCard},
         }}
       />
-      <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{headerShown: true, title: 'Settings', headerBackTitle: 'Home'}}
+      />
     </Stack.Navigator>
   );
 }

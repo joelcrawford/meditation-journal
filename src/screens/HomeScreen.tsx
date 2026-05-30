@@ -66,7 +66,7 @@ export function HomeScreen() {
   const todayStatus = sessionService.getTodayStatus();
 
   function openObjectSheet() {
-    navigation.navigate('MeditationObjectSheet');
+    navigation.navigate('Settings');
   }
 
   function beginEntry() {

@@ -17,6 +17,7 @@ import {ChipGrid} from '../components/ChipGrid';
 import {StagePips} from '../components/StagePips';
 import {CHIP_LIST} from '../constants/chips';
 import {sessionService, meditationObjectService} from '../services';
+import {notificationService} from '../services/NotificationService';
 import {getDayCount} from '../utils/date';
 import type {RootStackParamList} from '../navigation/types';
 
@@ -43,7 +44,8 @@ export function BeforeScreen() {
   }
 
   function handleStartSitting() {
-    saveBeforeEntry();
+    const session = saveBeforeEntry();
+    notificationService.scheduleIncompleteSessionFollowUp(session.id);
     navigation.navigate('Home');
   }
 
