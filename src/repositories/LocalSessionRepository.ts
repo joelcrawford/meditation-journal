@@ -38,11 +38,12 @@ export class LocalSessionRepository implements SessionRepository {
     const now = Math.floor(Date.now() / 1000);
     const db = getDb();
     db.executeSync(
-      `INSERT INTO sessions (date, meditation_object_id, before_mind, before_observations,
+      `INSERT INTO sessions (date, start_time, meditation_object_id, before_mind, before_observations,
         stage, created_at, updated_at)
-       VALUES (?, ?, ?, ?, 'before', ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, 'before', ?, ?)`,
       [
         date,
+        now,
         data.meditation_object_id ?? null,
         data.before_mind ?? null,
         data.before_observations ?? null,
