@@ -1,0 +1,33 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Fraunces-Italic.ttf",
+      "sha1": "a1734f8c4897eade4c85c47cadafb5b72b334333"
+    },
+    {
+      "path": "assets/fonts/Fraunces-Regular.ttf",
+      "sha1": "4eb6b98f86485d1d00ebbc080a5d209048f01935"
+    },
+    {
+      "path": "assets/fonts/Fraunces-SemiBold.ttf",
+      "sha1": "9c4d7a6a3b6f3ff14662cf4702ff88b236d58c4c"
+    },
+    {
+      "path": "assets/fonts/Newsreader-Italic.ttf",
+      "sha1": "92bd0edc7a34e2940ba9174b0e4f879021a92ecc"
+    },
+    {
+      "path": "assets/fonts/Newsreader-Medium.ttf",
+      "sha1": "a46b874d222fc0f65819ccf8447fdfcf56df99f8"
+    },
+    {
+      "path": "assets/fonts/Newsreader-Regular.ttf",
+      "sha1": "2e52fef7062fb58bf5edc71ad62ea22a24678c43"
+    },
+    {
+      "path": "assets/fonts/Newsreader-SemiBold.ttf",
+      "sha1": "86b5d888b021a6b22136f622f5241db5a5c17deb"
+    }
+  ]
+}
