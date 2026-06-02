@@ -23,8 +23,9 @@ export const navigationRef =
 export default function App() {
   useEffect(() => {
     // Request permissions and top up notification schedule (non-blocking)
-    notificationService.requestPermission();
-    notificationService.topUp();
+    notificationService.requestPermission().then(granted => {
+      if (granted) notificationService.topUp();
+    });
 
     // Handle any pending navigation from a background notification tap
     const pending = storage.getString(STORAGE_KEYS.PENDING_NAV);

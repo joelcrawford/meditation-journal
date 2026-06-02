@@ -68,7 +68,9 @@ class NotificationService {
 
   async topUp(): Promise<void> {
     const lastScheduled = storage.getString(STORAGE_KEYS.NOTIF_LAST_SCHEDULED);
-    if (!lastScheduled) {
+    const pending = await notifee.getTriggerNotifications();
+
+    if (!lastScheduled || pending.length === 0) {
       await this._scheduleBatch(14);
       return;
     }
