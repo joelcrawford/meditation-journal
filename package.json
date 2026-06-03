@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "ios": "react-native run-ios",
+    "local": "concurrently \"react-native start\" \"react-native run-ios --simulator 'iPhone 16'\"",
+    "preextract": "rm -f ios/Pods/ReactNativeDependencies/.last_build_configuration ios/Pods/React-Core-prebuilt/.last_build_configuration ios/Pods/hermes-engine/.last_build_configuration && (find ios/Pods/ReactNativeDependencies/framework -mindepth 1 -delete 2>/dev/null; rmdir ios/Pods/ReactNativeDependencies/framework 2>/dev/null; find ios/Pods/React-Core-prebuilt/React.xcframework -mindepth 1 -delete 2>/dev/null; rmdir ios/Pods/React-Core-prebuilt/React.xcframework 2>/dev/null; true) && cd ios/Pods && node ../../node_modules/react-native/third-party-podspecs/replace_dependencies_version.js -c Release -r 0.85.3 -p . && node ../../node_modules/react-native/scripts/replace-rncore-version.js -c Release -r 0.85.3 -p .",
+    "device": "npm run preextract && concurrently \"react-native start\" \"react-native run-ios --device 'Bingo Bango'\"",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
@@ -25,7 +28,8 @@
     "react-native-mmkv": "^4.3.1",
     "react-native-nitro-modules": "^0.35.9",
     "react-native-safe-area-context": "^5.8.0",
-    "react-native-screens": "^4.25.2"
+    "react-native-screens": "^4.25.2",
+    "react-native-svg": "^15.15.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -42,6 +46,7 @@
     "@types/jest": "^29.5.13",
     "@types/react": "^19.2.0",
     "@types/react-test-renderer": "^19.1.0",
+    "concurrently": "^9.2.1",
     "eslint": "^8.19.0",
     "jest": "^29.6.3",
     "prettier": "2.8.8",

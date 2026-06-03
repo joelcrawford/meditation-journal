@@ -1,6 +1,7 @@
 export type RootStackParamList = {
   Home: undefined;
   Before: undefined;
+  Timer: {sessionId: number};
   After: {sessionId: number};
   CheckinModal: {checkinType: 'morning' | 'afternoon' | 'evening'};
   CheckinResult: {

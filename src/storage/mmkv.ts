@@ -14,4 +14,7 @@ export const STORAGE_KEYS = {
   NOTIF_EVENING_ENABLED: 'notifications.evening_enabled',
   NOTIF_LAST_SCHEDULED: 'notifications.last_scheduled_date',
   PENDING_NAV: 'pending.navigation',
+  BELL_SOUND: 'bell.sound',
+  TIMER_ELAPSED: 'timer.elapsed',
+  TIMER_STATE: 'timer.paused_state',
 } as const;

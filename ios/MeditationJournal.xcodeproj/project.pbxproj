@@ -7,13 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05B5CC9BA7F247A7BF804F64 /* freesound_community-e-flat-tibetan-singing-bowl-struck-38746.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4E2C35659F3E4ACCA4B005E3 /* freesound_community-e-flat-tibetan-singing-bowl-struck-38746.mp3 */; };
 		07CD7FFA51DE5486085787F3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		0C80B921A6F3F58F76C31292 /* libPods-MeditationJournal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-MeditationJournal.a */; };
+		1025FB29FC364CC299A9C25F /* freesound_community-025651_tibetan-bowl-64973.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5EC6D62C9D2D4A16AB0BCE5B /* freesound_community-025651_tibetan-bowl-64973.mp3 */; };
+		10D162D1442341CCACE3641E /* freesound_community-singing-bell-hit-1-105400.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EA616BB6904341D28EE517BF /* freesound_community-singing-bell-hit-1-105400.mp3 */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		1A9C5ED503B54F2C87B583A5 /* freesound_community-tibetan-singing-bowl-55786.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EB1FC560D5664F3FB1744F9F /* freesound_community-tibetan-singing-bowl-55786.mp3 */; };
+		3D56473F13FE41DBAB6377BE /* tibetan-bowl.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 60A48E95AB0246BDBD0CB8CF /* tibetan-bowl.mp3 */; };
 		4E08FAB6A2EA47BCB6072F20 /* Newsreader-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 955CF69A624949769489CFE7 /* Newsreader-Medium.ttf */; };
+		66600DA047284A9FBBCF9BBA /* freesound_community-singing-bowl-hit-3-33366.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0AAE9CA15F4A4C64B7F6B158 /* freesound_community-singing-bowl-hit-3-33366.mp3 */; };
 		72F9BC2D92714575806E9211 /* Fraunces-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 75B28EB8779B4EC5AA39F89D /* Fraunces-Regular.ttf */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
+		7E5677C4BFD242BD8E9B456A /* freesound_community-small-bowl-35530.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E4482D1DA7C443928F500A26 /* freesound_community-small-bowl-35530.mp3 */; };
+		80E49048C8EF4E32A3A6079D /* freesound_community-tibetan-bowl-26240.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 667964A3876746B9AF1D9AFD /* freesound_community-tibetan-bowl-26240.mp3 */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		868EEE89131B4617864B81BD /* freesound_community-031072_tibetan-bowl-64974.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3678B83614DE435B9242140A /* freesound_community-031072_tibetan-bowl-64974.mp3 */; };
+		8A71E163BCBE4A20A582CD86 /* freesound_community-singing-bell-hit-2-75258.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D64C981F031044E8BF917BDD /* freesound_community-singing-bell-hit-2-75258.mp3 */; };
 		927D110D096D45CCBD8F69B1 /* Fraunces-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C3E78DB6379546D8898338F1 /* Fraunces-Italic.ttf */; };
 		AB0E4D2F49C440E6909F68FC /* Newsreader-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 730DA09D27C3416AB13006B7 /* Newsreader-Italic.ttf */; };
 		CBEE570AFA2844B5815158D0 /* Newsreader-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 708E3806F2CE432CAA6286CC /* Newsreader-SemiBold.ttf */; };
@@ -22,22 +32,32 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0AAE9CA15F4A4C64B7F6B158 /* freesound_community-singing-bowl-hit-3-33366.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "freesound_community-singing-bowl-hit-3-33366.mp3"; path = "../assets/sounds/freesound_community-singing-bowl-hit-3-33366.mp3"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* MeditationJournal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeditationJournal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = MeditationJournal/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = MeditationJournal/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = MeditationJournal/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		3678B83614DE435B9242140A /* freesound_community-031072_tibetan-bowl-64974.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "freesound_community-031072_tibetan-bowl-64974.mp3"; path = "../assets/sounds/freesound_community-031072_tibetan-bowl-64974.mp3"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-MeditationJournal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MeditationJournal.debug.xcconfig"; path = "Target Support Files/Pods-MeditationJournal/Pods-MeditationJournal.debug.xcconfig"; sourceTree = "<group>"; };
+		4E2C35659F3E4ACCA4B005E3 /* freesound_community-e-flat-tibetan-singing-bowl-struck-38746.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "freesound_community-e-flat-tibetan-singing-bowl-struck-38746.mp3"; path = "../assets/sounds/freesound_community-e-flat-tibetan-singing-bowl-struck-38746.mp3"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-MeditationJournal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MeditationJournal.release.xcconfig"; path = "Target Support Files/Pods-MeditationJournal/Pods-MeditationJournal.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-MeditationJournal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MeditationJournal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		708E3806F2CE432CAA6286CC /* Newsreader-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-SemiBold.ttf"; path = "../assets/fonts/Newsreader-SemiBold.ttf"; sourceTree = "<group>"; };
-		730DA09D27C3416AB13006B7 /* Newsreader-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-Italic.ttf"; path = "../assets/fonts/Newsreader-Italic.ttf"; sourceTree = "<group>"; };
-		75B28EB8779B4EC5AA39F89D /* Fraunces-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Fraunces-Regular.ttf"; path = "../assets/fonts/Fraunces-Regular.ttf"; sourceTree = "<group>"; };
+		5EC6D62C9D2D4A16AB0BCE5B /* freesound_community-025651_tibetan-bowl-64973.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "freesound_community-025651_tibetan-bowl-64973.mp3"; path = "../assets/sounds/freesound_community-025651_tibetan-bowl-64973.mp3"; sourceTree = "<group>"; };
+		60A48E95AB0246BDBD0CB8CF /* tibetan-bowl.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "tibetan-bowl.mp3"; path = "../assets/sounds/tibetan-bowl.mp3"; sourceTree = "<group>"; };
+		667964A3876746B9AF1D9AFD /* freesound_community-tibetan-bowl-26240.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "freesound_community-tibetan-bowl-26240.mp3"; path = "../assets/sounds/freesound_community-tibetan-bowl-26240.mp3"; sourceTree = "<group>"; };
+		708E3806F2CE432CAA6286CC /* Newsreader-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-SemiBold.ttf"; path = "../assets/fonts/Newsreader-SemiBold.ttf"; sourceTree = "<group>"; };
+		730DA09D27C3416AB13006B7 /* Newsreader-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-Italic.ttf"; path = "../assets/fonts/Newsreader-Italic.ttf"; sourceTree = "<group>"; };
+		75B28EB8779B4EC5AA39F89D /* Fraunces-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Fraunces-Regular.ttf"; path = "../assets/fonts/Fraunces-Regular.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MeditationJournal/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = MeditationJournal/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		955CF69A624949769489CFE7 /* Newsreader-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-Medium.ttf"; path = "../assets/fonts/Newsreader-Medium.ttf"; sourceTree = "<group>"; };
-		AC1E72A921424EC1906E66A7 /* Newsreader-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-Regular.ttf"; path = "../assets/fonts/Newsreader-Regular.ttf"; sourceTree = "<group>"; };
-		ADB6ED72198A437D87CBD334 /* Fraunces-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Fraunces-SemiBold.ttf"; path = "../assets/fonts/Fraunces-SemiBold.ttf"; sourceTree = "<group>"; };
-		C3E78DB6379546D8898338F1 /* Fraunces-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Fraunces-Italic.ttf"; path = "../assets/fonts/Fraunces-Italic.ttf"; sourceTree = "<group>"; };
+		955CF69A624949769489CFE7 /* Newsreader-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-Medium.ttf"; path = "../assets/fonts/Newsreader-Medium.ttf"; sourceTree = "<group>"; };
+		AC1E72A921424EC1906E66A7 /* Newsreader-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader-Regular.ttf"; path = "../assets/fonts/Newsreader-Regular.ttf"; sourceTree = "<group>"; };
+		ADB6ED72198A437D87CBD334 /* Fraunces-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Fraunces-SemiBold.ttf"; path = "../assets/fonts/Fraunces-SemiBold.ttf"; sourceTree = "<group>"; };
+		C3E78DB6379546D8898338F1 /* Fraunces-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Fraunces-Italic.ttf"; path = "../assets/fonts/Fraunces-Italic.ttf"; sourceTree = "<group>"; };
+		D64C981F031044E8BF917BDD /* freesound_community-singing-bell-hit-2-75258.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "freesound_community-singing-bell-hit-2-75258.mp3"; path = "../assets/sounds/freesound_community-singing-bell-hit-2-75258.mp3"; sourceTree = "<group>"; };
+		E4482D1DA7C443928F500A26 /* freesound_community-small-bowl-35530.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "freesound_community-small-bowl-35530.mp3"; path = "../assets/sounds/freesound_community-small-bowl-35530.mp3"; sourceTree = "<group>"; };
+		EA616BB6904341D28EE517BF /* freesound_community-singing-bell-hit-1-105400.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "freesound_community-singing-bell-hit-1-105400.mp3"; path = "../assets/sounds/freesound_community-singing-bell-hit-1-105400.mp3"; sourceTree = "<group>"; };
+		EB1FC560D5664F3FB1744F9F /* freesound_community-tibetan-singing-bowl-55786.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "freesound_community-tibetan-singing-bowl-55786.mp3"; path = "../assets/sounds/freesound_community-tibetan-singing-bowl-55786.mp3"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -61,6 +81,13 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
+			);
+			name = MeditationJournal;
+			sourceTree = "<group>";
+		};
+		24188873CAD234D673D2FF95 /* MeditationJournal */ = {
+			isa = PBXGroup;
+			children = (
 			);
 			name = MeditationJournal;
 			sourceTree = "<group>";
@@ -114,9 +141,18 @@
 				955CF69A624949769489CFE7 /* Newsreader-Medium.ttf */,
 				730DA09D27C3416AB13006B7 /* Newsreader-Italic.ttf */,
 				C3E78DB6379546D8898338F1 /* Fraunces-Italic.ttf */,
+				EA616BB6904341D28EE517BF /* freesound_community-singing-bell-hit-1-105400.mp3 */,
+				3678B83614DE435B9242140A /* freesound_community-031072_tibetan-bowl-64974.mp3 */,
+				0AAE9CA15F4A4C64B7F6B158 /* freesound_community-singing-bowl-hit-3-33366.mp3 */,
+				4E2C35659F3E4ACCA4B005E3 /* freesound_community-e-flat-tibetan-singing-bowl-struck-38746.mp3 */,
+				D64C981F031044E8BF917BDD /* freesound_community-singing-bell-hit-2-75258.mp3 */,
+				5EC6D62C9D2D4A16AB0BCE5B /* freesound_community-025651_tibetan-bowl-64973.mp3 */,
+				60A48E95AB0246BDBD0CB8CF /* tibetan-bowl.mp3 */,
+				EB1FC560D5664F3FB1744F9F /* freesound_community-tibetan-singing-bowl-55786.mp3 */,
+				667964A3876746B9AF1D9AFD /* freesound_community-tibetan-bowl-26240.mp3 */,
+				E4482D1DA7C443928F500A26 /* freesound_community-small-bowl-35530.mp3 */,
 			);
 			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
@@ -136,6 +172,7 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "MeditationJournal" */;
 			buildPhases = (
 				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
+				2F655447AECB248A497F6702 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
@@ -198,6 +235,16 @@
 				4E08FAB6A2EA47BCB6072F20 /* Newsreader-Medium.ttf in Resources */,
 				AB0E4D2F49C440E6909F68FC /* Newsreader-Italic.ttf in Resources */,
 				927D110D096D45CCBD8F69B1 /* Fraunces-Italic.ttf in Resources */,
+				10D162D1442341CCACE3641E /* freesound_community-singing-bell-hit-1-105400.mp3 in Resources */,
+				868EEE89131B4617864B81BD /* freesound_community-031072_tibetan-bowl-64974.mp3 in Resources */,
+				66600DA047284A9FBBCF9BBA /* freesound_community-singing-bowl-hit-3-33366.mp3 in Resources */,
+				05B5CC9BA7F247A7BF804F64 /* freesound_community-e-flat-tibetan-singing-bowl-struck-38746.mp3 in Resources */,
+				8A71E163BCBE4A20A582CD86 /* freesound_community-singing-bell-hit-2-75258.mp3 in Resources */,
+				1025FB29FC364CC299A9C25F /* freesound_community-025651_tibetan-bowl-64973.mp3 in Resources */,
+				3D56473F13FE41DBAB6377BE /* tibetan-bowl.mp3 in Resources */,
+				1A9C5ED503B54F2C87B583A5 /* freesound_community-tibetan-singing-bowl-55786.mp3 in Resources */,
+				80E49048C8EF4E32A3A6079D /* freesound_community-tibetan-bowl-26240.mp3 in Resources */,
+				7E5677C4BFD242BD8E9B456A /* freesound_community-small-bowl-35530.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +283,28 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MeditationJournal/Pods-MeditationJournal-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		2F655447AECB248A497F6702 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-MeditationJournal/expo-configure-project.sh",
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-MeditationJournal/expo-configure-project.sh\"\n";
 		};
 		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -296,7 +365,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5469PA59T3;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = MeditationJournal/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -310,8 +382,10 @@
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.havehopeyo.meditationjournal;
 				PRODUCT_NAME = MeditationJournal;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -326,7 +400,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5469PA59T3;
 				INFOPLIST_FILE = MeditationJournal/Info.plist;
@@ -341,8 +416,10 @@
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.havehopeyo.meditationjournal;
 				PRODUCT_NAME = MeditationJournal;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

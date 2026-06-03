@@ -46,7 +46,7 @@ export function BeforeScreen() {
   function handleStartSitting() {
     const session = saveBeforeEntry();
     notificationService.scheduleIncompleteSessionFollowUp(session.id);
-    navigation.navigate('Home');
+    navigation.navigate('Timer', {sessionId: session.id});
   }
 
   function handleCompleteNow() {

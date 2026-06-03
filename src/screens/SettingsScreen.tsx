@@ -272,7 +272,7 @@ export function SettingsScreen() {
           </View>
           <View style={styles.row}>
             <Text style={styles.rowLabel}>Minimum iOS</Text>
-            <Text style={styles.infoValue}>16.0</Text>
+            <Text style={styles.infoValue}>16.4</Text>
           </View>
         </View>
 

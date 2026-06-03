@@ -3,6 +3,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import type {RootStackParamList} from './types';
 import {HomeScreen} from '../screens/HomeScreen';
 import {BeforeScreen} from '../screens/BeforeScreen';
+import {TimerScreen} from '../screens/TimerScreen';
 import {AfterScreen} from '../screens/AfterScreen';
 import {CheckinModal} from '../screens/CheckinModal';
 import {CheckinResultScreen} from '../screens/CheckinResultScreen';
@@ -19,6 +20,7 @@ export function RootNavigator() {
       screenOptions={{headerShown: false}}>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Before" component={BeforeScreen} />
+      <Stack.Screen name="Timer" component={TimerScreen} />
       <Stack.Screen name="After" component={AfterScreen} />
       <Stack.Screen
         name="CheckinModal"

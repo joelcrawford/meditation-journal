@@ -8,6 +8,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -45,13 +46,20 @@ export function AfterScreen() {
       )
     : [];
 
-  // Duration
-  const defaultDuration = storage.getNumber(STORAGE_KEYS.DEFAULT_DURATION) ?? 1200;
+  // Duration — prefer TIMER_ELAPSED (set by TimerScreen on complete), fall back to DEFAULT_DURATION
+  const timerElapsed = storage.getNumber(STORAGE_KEYS.TIMER_ELAPSED);
+  if (timerElapsed != null) storage.remove(STORAGE_KEYS.TIMER_ELAPSED);
+  const defaultDuration = timerElapsed ?? storage.getNumber(STORAGE_KEYS.DEFAULT_DURATION) ?? 1200;
   const [durationSeconds, setDurationSeconds] = useState(defaultDuration);
+
+  // Detect if there's a paused timer for this session
+  const timerStateRaw = storage.getString(STORAGE_KEYS.TIMER_STATE);
+  const pausedTimer = (() => { try { return timerStateRaw ? JSON.parse(timerStateRaw) : null; } catch { return null; } })();
+  const hasPausedTimer = pausedTimer?.sessionId === sessionId;
 
   function adjustDuration(delta: number) {
     setDurationSeconds(prev =>
-      Math.min(10800, Math.max(60, prev + delta)),
+      Math.min(10800, Math.max(0, prev + delta)),
     );
   }
 
@@ -67,6 +75,26 @@ export function AfterScreen() {
   const [emotionalObsText, setEmotionalObsText] = useState('');
   const [awarenessText, setAwarenessText] = useState('');
   const [lostText, setLostText] = useState('');
+
+  function handleDelete() {
+    Alert.alert(
+      'Delete this entry?',
+      'The session will be permanently removed.',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            notificationService.cancelIncompleteSessionFollowUp(sessionId);
+            storage.remove(STORAGE_KEYS.TIMER_STATE);
+            sessionService.deleteSession(sessionId);
+            navigation.popToTop();
+          },
+        },
+      ],
+    );
+  }
 
   function handleSave() {
     notificationService.cancelIncompleteSessionFollowUp(sessionId);
@@ -117,21 +145,32 @@ export function AfterScreen() {
             </View>
           </View>
 
+          {/* Resume timer if paused */}
+          {hasPausedTimer && (
+            <TouchableOpacity
+              style={styles.resumeTimerBtn}
+              onPress={() => navigation.navigate('Timer', {sessionId})}>
+              <Text style={styles.resumeTimerText}>↩ Resume paused timer</Text>
+            </TouchableOpacity>
+          )}
+
           {/* Duration */}
           <View style={styles.durationRow}>
             <Text style={styles.durationLabel}>Duration</Text>
             <View style={styles.stepper}>
               <TouchableOpacity
                 style={styles.stepperBtn}
-                onPress={() => adjustDuration(-300)}>
+                onPress={() => adjustDuration(-60)}>
                 <Text style={styles.stepperBtnText}>−</Text>
               </TouchableOpacity>
               <Text style={styles.stepperValue}>
-                {durationSeconds / 60} min
+                {durationSeconds >= 60
+                  ? `${Math.floor(durationSeconds / 60)}m${durationSeconds % 60 > 0 ? ` ${durationSeconds % 60}s` : ''}`
+                  : `${durationSeconds}s`}
               </Text>
               <TouchableOpacity
                 style={styles.stepperBtn}
-                onPress={() => adjustDuration(300)}>
+                onPress={() => adjustDuration(60)}>
                 <Text style={styles.stepperBtnText}>+</Text>
               </TouchableOpacity>
             </View>
@@ -223,6 +262,10 @@ export function AfterScreen() {
           {/* Save */}
           <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
             <Text style={styles.saveBtnText}>Save entry</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.deleteBtn} onPress={handleDelete}>
+            <Text style={styles.deleteBtnText}>Delete entry</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -341,6 +384,20 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
+  resumeTimerBtn: {
+    alignSelf: 'flex-start',
+    marginBottom: Spacing.sp3,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    backgroundColor: Colors.mossPale,
+    borderRadius: Radius.pill,
+  },
+  resumeTimerText: {
+    fontFamily: 'Newsreader-Medium',
+    fontSize: 14,
+    color: Colors.mossDeep,
+  },
+
   durationRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -381,5 +438,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Newsreader-Medium',
     fontSize: 16,
     color: Colors.mossPale,
+  },
+  deleteBtn: {
+    alignItems: 'center',
+    paddingVertical: 14,
+    marginTop: Spacing.sp2,
+  },
+  deleteBtnText: {
+    fontFamily: 'Newsreader-Regular',
+    fontSize: 14,
+    color: Colors.clay,
+    textDecorationLine: 'underline',
   },
 });
