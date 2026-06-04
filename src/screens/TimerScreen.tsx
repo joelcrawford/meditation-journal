@@ -143,7 +143,6 @@ export function TimerScreen() {
   function handleFinishEarly() {
     stopInterval();
     storage.remove(STORAGE_KEYS.TIMER_STATE);
-    bellService.playBell().catch(() => {});
     storage.set(STORAGE_KEYS.TIMER_ELAPSED, elapsedSecRef.current);
     navigation.replace('After', {sessionId});
   }
