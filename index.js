@@ -46,6 +46,11 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
       'pending.navigation',
       JSON.stringify({screen: 'After', params: {sessionId: Number(sessionId)}}),
     );
+  } else if (kind === 'timer_end' && sessionId) {
+    storage.set(
+      'pending.navigation',
+      JSON.stringify({screen: 'After', params: {sessionId: Number(sessionId)}}),
+    );
   }
 });
 

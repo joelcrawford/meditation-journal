@@ -138,6 +138,24 @@ class NotificationService {
   async cancelIncompleteSessionFollowUp(sessionId: number): Promise<void> {
     await notifee.cancelTriggerNotification(String(sessionId));
   }
+
+  async scheduleTimerEnd(sessionId: number, notifId: string, endMs: number): Promise<void> {
+    await notifee.createTriggerNotification(
+      {
+        id: notifId,
+        title: 'Sit complete',
+        body: 'Your timer has ended. Tap to record your session.',
+        data: {sessionId: String(sessionId), kind: 'timer_end'},
+        ios: {sound: 'tibetan-bowl.mp3'},
+        android: {channelId: CHANNEL_ID},
+      },
+      {type: TriggerType.TIMESTAMP, timestamp: endMs},
+    );
+  }
+
+  async cancelTimerEnd(notifId: string): Promise<void> {
+    await notifee.cancelTriggerNotification(notifId);
+  }
 }
 
 export const notificationService = new NotificationService();

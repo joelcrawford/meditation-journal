@@ -5,7 +5,9 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  AppState,
 } from 'react-native';
+import type {AppStateStatus} from 'react-native';
 import Svg, {Circle} from 'react-native-svg';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -58,6 +60,8 @@ export function TimerScreen() {
   // totalSec lives in a ref so the completion handler always reads the current value
   const totalSecRef = useRef(hasSavedState ? savedState.totalSec : 0);
   const elapsedSecRef = useRef(hasSavedState ? savedState.elapsedSec : 0);
+  const endTimeRef = useRef<number | null>(null); // absolute ms when sit ends
+  const endNotifIdRef = useRef<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const completedRef = useRef(false);
 
@@ -86,12 +90,42 @@ export function TimerScreen() {
     if (completedRef.current) return;
     completedRef.current = true;
     stopInterval();
+    cancelEndNotification();
+    endTimeRef.current = null;
 // deactivateKeepAwake();
     bellService.playBell().catch(() => {});
     storage.remove(STORAGE_KEYS.TIMER_STATE);
     storage.set(STORAGE_KEYS.TIMER_ELAPSED, elapsedSecRef.current);
     navigation.replace('After', {sessionId});
   }, [stopInterval, sessionId, navigation]);
+
+  // 1A — AppState correction: when app returns to foreground, resync countdown
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (next: AppStateStatus) => {
+      if (next !== 'active' || endTimeRef.current === null) return;
+      const remaining = Math.round((endTimeRef.current - Date.now()) / 1000);
+      if (remaining <= 0) {
+        handleComplete();
+      } else {
+        elapsedSecRef.current = totalSecRef.current - remaining;
+        setRemainingSec(remaining);
+      }
+    });
+    return () => sub.remove();
+  }, [handleComplete]);
+
+  async function scheduleEndNotification(endMs: number) {
+    const id = `timer-end-${sessionId}`;
+    await notificationService.scheduleTimerEnd(sessionId, id, endMs);
+    endNotifIdRef.current = id;
+  }
+
+  function cancelEndNotification() {
+    if (endNotifIdRef.current) {
+      notificationService.cancelTimerEnd(endNotifIdRef.current).catch(() => {});
+      endNotifIdRef.current = null;
+    }
+  }
 
   function startInterval() {
     intervalRef.current = setInterval(() => {
@@ -110,15 +144,20 @@ export function TimerScreen() {
     const sec = durationMin * 60;
     totalSecRef.current = sec;
     elapsedSecRef.current = 0;
+    const endMs = Date.now() + sec * 1000;
+    endTimeRef.current = endMs;
     setRemainingSec(sec);
     setPhase('running');
 // activateKeepAwake(); // TODO: add native keep-awake
     bellService.playBell().catch(() => {});
+    scheduleEndNotification(endMs).catch(() => {});
     startInterval();
   }
 
   function handlePause() {
     stopInterval();
+    cancelEndNotification();
+    endTimeRef.current = null;
 // deactivateKeepAwake();
     storage.set(STORAGE_KEYS.TIMER_STATE, JSON.stringify({
       sessionId,
@@ -131,6 +170,9 @@ export function TimerScreen() {
 
   function handleResume() {
     storage.remove(STORAGE_KEYS.TIMER_STATE);
+    const endMs = Date.now() + remainingSec * 1000;
+    endTimeRef.current = endMs;
+    scheduleEndNotification(endMs).catch(() => {});
     setPhase('running');
 // activateKeepAwake(); // TODO: add native keep-awake
     startInterval();
@@ -142,6 +184,8 @@ export function TimerScreen() {
 
   function handleFinishEarly() {
     stopInterval();
+    cancelEndNotification();
+    endTimeRef.current = null;
     storage.remove(STORAGE_KEYS.TIMER_STATE);
     storage.set(STORAGE_KEYS.TIMER_ELAPSED, elapsedSecRef.current);
     navigation.replace('After', {sessionId});
@@ -149,6 +193,8 @@ export function TimerScreen() {
 
   function handleDiscard() {
     stopInterval();
+    cancelEndNotification();
+    endTimeRef.current = null;
 // deactivateKeepAwake();
     storage.remove(STORAGE_KEYS.TIMER_STATE);
     sessionService.deleteSession(sessionId);
