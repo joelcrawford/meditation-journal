@@ -9,13 +9,14 @@ import {
   StyleSheet,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Colors, Radius, Spacing, Typography} from '../theme';
 import {storage, STORAGE_KEYS} from '../storage/mmkv';
 import {notificationService} from '../services/NotificationService';
 import {getDb} from '../db';
+import {bellDisplayName} from '../constants/bells';
 import type {RootStackParamList} from '../navigation/types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -62,11 +63,16 @@ export function SettingsScreen() {
   const [eveningOn, setEveningOn] = useState(
     storage.getBoolean(STORAGE_KEYS.NOTIF_EVENING_ENABLED) ?? true,
   );
-
   const [showPicker, setShowPicker] = useState<'morning' | 'afternoon' | 'evening' | null>(null);
-  const [defaultDuration, setDefaultDuration] = useState(
-    Math.round((storage.getNumber(STORAGE_KEYS.DEFAULT_DURATION) ?? 1200) / 60),
+
+  const [currentBell, setCurrentBell] = useState(
+    storage.getString(STORAGE_KEYS.BELL_SOUND) ?? 'tibetan-bowl',
   );
+
+  // Refresh bell name when returning from picker
+  useFocusEffect(() => {
+    setCurrentBell(storage.getString(STORAGE_KEYS.BELL_SOUND) ?? 'tibetan-bowl');
+  });
 
   function handleTimeChange(
     slot: 'morning' | 'afternoon' | 'evening',
@@ -104,12 +110,6 @@ export function SettingsScreen() {
     else if (slot === 'afternoon') setAfternoonOn(val);
     else setEveningOn(val);
     notificationService.reschedule();
-  }
-
-  function adjustDuration(delta: number) {
-    const next = Math.min(180, Math.max(1, defaultDuration + delta));
-    setDefaultDuration(next);
-    storage.set(STORAGE_KEYS.DEFAULT_DURATION, next * 60);
   }
 
   function confirmReset() {
@@ -153,6 +153,39 @@ export function SettingsScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
+
+        {/* Meditation */}
+        <Text style={styles.sectionLabel}>MEDITATION</Text>
+        <View style={styles.card}>
+          <TouchableOpacity
+            style={[styles.row, styles.rowBorder]}
+            onPress={() => navigation.navigate('MeditationObjectSheet')}>
+            <View style={styles.rowLeft}>
+              <View style={[styles.iconBox, {backgroundColor: Colors.mossPale}]}>
+                <Text style={styles.iconText}>◉</Text>
+              </View>
+              <View>
+                <Text style={styles.rowLabel}>Meditation object</Text>
+                <Text style={styles.rowSub}>Change your current focus</Text>
+              </View>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => navigation.navigate('BellPicker')}>
+            <View style={styles.rowLeft}>
+              <View style={[styles.iconBox, {backgroundColor: Colors.mossPale}]}>
+                <Text style={styles.iconText}>🔔</Text>
+              </View>
+              <View>
+                <Text style={styles.rowLabel}>Bell sound</Text>
+                <Text style={styles.rowSub}>{bellDisplayName(currentBell)}</Text>
+              </View>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Check-in Notifications */}
         <Text style={styles.sectionLabel}>CHECK-IN NOTIFICATIONS</Text>
@@ -222,45 +255,6 @@ export function SettingsScreen() {
               <Text style={styles.notifTime}>{n.time}</Text>
             </View>
           ))}
-        </View>
-
-        {/* Session Defaults */}
-        <Text style={styles.sectionLabel}>SESSION DEFAULTS</Text>
-        <View style={styles.card}>
-          <View style={[styles.row, styles.rowBorder]}>
-            <View style={styles.rowLeft}>
-              <View style={[styles.iconBox, {backgroundColor: Colors.mossPale}]}>
-                <Text style={styles.iconText}>⏱</Text>
-              </View>
-              <View>
-                <Text style={styles.rowLabel}>Default duration</Text>
-                <Text style={styles.rowSub}>Pre-fills the duration stepper</Text>
-              </View>
-            </View>
-            <View style={styles.stepper}>
-              <TouchableOpacity style={styles.stepBtn} onPress={() => adjustDuration(-5)}>
-                <Text style={styles.stepBtnText}>−</Text>
-              </TouchableOpacity>
-              <Text style={styles.stepValue}>{defaultDuration} min</Text>
-              <TouchableOpacity style={styles.stepBtn} onPress={() => adjustDuration(5)}>
-                <Text style={styles.stepBtnText}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <TouchableOpacity
-            style={styles.row}
-            onPress={() => navigation.navigate('MeditationObjectSheet')}>
-            <View style={styles.rowLeft}>
-              <View style={[styles.iconBox, {backgroundColor: Colors.mossPale}]}>
-                <Text style={styles.iconText}>◉</Text>
-              </View>
-              <View>
-                <Text style={styles.rowLabel}>Meditation object</Text>
-                <Text style={styles.rowSub}>Change your current focus</Text>
-              </View>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
         </View>
 
         {/* About */}
@@ -368,18 +362,4 @@ const styles = StyleSheet.create({
   notifTitle: {fontFamily: 'Newsreader-Medium', fontSize: 13, color: Colors.ink},
   notifBody: {fontFamily: 'Newsreader-Regular', fontSize: 11, color: Colors.inkFaint, marginTop: 1},
   notifTime: {fontFamily: 'Newsreader-Regular', fontSize: 11, color: Colors.inkFaint, paddingTop: 1},
-
-  stepper: {flexDirection: 'row', alignItems: 'center', gap: 8},
-  stepBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: Colors.sepia,
-    backgroundColor: Colors.stone100,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  stepBtnText: {fontSize: 16, color: Colors.inkSoft, lineHeight: 20},
-  stepValue: {fontFamily: 'Newsreader-Medium', fontSize: 14, color: Colors.ink, minWidth: 48, textAlign: 'center'},
 });

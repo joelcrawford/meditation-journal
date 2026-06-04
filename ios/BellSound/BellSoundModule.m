@@ -7,11 +7,11 @@
 
 RCT_EXPORT_MODULE(BellSound);
 
-RCT_EXPORT_METHOD(play:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(play:(NSString *)stem
+                resolver:(RCTPromiseResolveBlock)resolve
                 rejecter:(RCTPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    NSString *stem = @"tibetan-bowl";
     NSString *path = [[NSBundle mainBundle] pathForResource:stem ofType:@"mp3"];
     if (!path) {
       resolve(nil);

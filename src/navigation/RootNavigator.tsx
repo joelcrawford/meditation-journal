@@ -9,6 +9,7 @@ import {CheckinModal} from '../screens/CheckinModal';
 import {CheckinResultScreen} from '../screens/CheckinResultScreen';
 import {MeditationObjectSheet} from '../screens/MeditationObjectSheet';
 import {SettingsScreen} from '../screens/SettingsScreen';
+import {BellPickerScreen} from '../screens/BellPickerScreen';
 import {Colors} from '../theme';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -39,6 +40,11 @@ export function RootNavigator() {
           presentation: 'modal',
           contentStyle: {backgroundColor: Colors.paperCard},
         }}
+      />
+      <Stack.Screen
+        name="BellPicker"
+        component={BellPickerScreen}
+        options={{headerShown: true, title: 'Bell sound', headerBackTitle: 'Settings'}}
       />
       <Stack.Screen
         name="Settings"

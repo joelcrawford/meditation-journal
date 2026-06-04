@@ -12,5 +12,6 @@ export type RootStackParamList = {
     type: 'morning' | 'afternoon' | 'evening';
   };
   MeditationObjectSheet: undefined;
+  BellPicker: undefined;
   Settings: undefined;
 };

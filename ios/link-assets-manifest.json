@@ -30,40 +30,40 @@
       "sha1": "86b5d888b021a6b22136f622f5241db5a5c17deb"
     },
     {
-      "path": "assets/sounds/freesound_community-025651_tibetan-bowl-64973.mp3",
-      "sha1": "c48fb93c01d3440d6356e12e2a7c48f9ca8770a0"
+      "path": "assets/sounds/tibetan-bowl-02.mp3",
+      "sha1": "e1fc6c1339629ff5736f873aee2c00f19ad85a79"
     },
     {
-      "path": "assets/sounds/freesound_community-031072_tibetan-bowl-64974.mp3",
-      "sha1": "76c3813cc687ff1d247900a3d8d16a1f3f0ac78e"
-    },
-    {
-      "path": "assets/sounds/freesound_community-e-flat-tibetan-singing-bowl-struck-38746.mp3",
-      "sha1": "e888adfb31b10f1482d885f88e0cb33fb26795f1"
-    },
-    {
-      "path": "assets/sounds/freesound_community-singing-bell-hit-1-105400.mp3",
-      "sha1": "0e1f340158cdf092b8261ea2bcbdc48c0b29522e"
-    },
-    {
-      "path": "assets/sounds/freesound_community-singing-bell-hit-2-75258.mp3",
-      "sha1": "6cc08214a858c8518c2077baa11434a848b6a084"
-    },
-    {
-      "path": "assets/sounds/freesound_community-singing-bowl-hit-3-33366.mp3",
-      "sha1": "a260434d6486397683f3fb74323892458876d077"
-    },
-    {
-      "path": "assets/sounds/freesound_community-small-bowl-35530.mp3",
-      "sha1": "4f556936475988d5289dec28bb6af9aaf2b7689d"
-    },
-    {
-      "path": "assets/sounds/freesound_community-tibetan-bowl-26240.mp3",
+      "path": "assets/sounds/tibetan-bowl-03.mp3",
       "sha1": "2db8a430560772eca413284e315a8e48ab8193d5"
     },
     {
-      "path": "assets/sounds/freesound_community-tibetan-singing-bowl-55786.mp3",
-      "sha1": "e1fc6c1339629ff5736f873aee2c00f19ad85a79"
+      "path": "assets/sounds/tibetan-bowl-04.mp3",
+      "sha1": "4f556936475988d5289dec28bb6af9aaf2b7689d"
+    },
+    {
+      "path": "assets/sounds/tibetan-bowl-05.mp3",
+      "sha1": "a260434d6486397683f3fb74323892458876d077"
+    },
+    {
+      "path": "assets/sounds/tibetan-bowl-06.mp3",
+      "sha1": "6cc08214a858c8518c2077baa11434a848b6a084"
+    },
+    {
+      "path": "assets/sounds/tibetan-bowl-07.mp3",
+      "sha1": "0e1f340158cdf092b8261ea2bcbdc48c0b29522e"
+    },
+    {
+      "path": "assets/sounds/tibetan-bowl-08.mp3",
+      "sha1": "e888adfb31b10f1482d885f88e0cb33fb26795f1"
+    },
+    {
+      "path": "assets/sounds/tibetan-bowl-09.mp3",
+      "sha1": "76c3813cc687ff1d247900a3d8d16a1f3f0ac78e"
+    },
+    {
+      "path": "assets/sounds/tibetan-bowl-10.mp3",
+      "sha1": "c48fb93c01d3440d6356e12e2a7c48f9ca8770a0"
     },
     {
       "path": "assets/sounds/tibetan-bowl.mp3",
