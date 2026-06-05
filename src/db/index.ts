@@ -59,7 +59,18 @@ export function initializeDatabase(): void {
   realDb.executeSync('PRAGMA journal_mode=WAL;');
   bootstrapMeta(realDb);
   runMigrations(realDb);
-  loadChipsFrom(realDb);
+
+  // If a test profile was active when the app last quit, re-open the test DB
+  // so getDb() resolves correctly before any repository calls happen.
+  if (storage.getString(STORAGE_KEYS.ACTIVE_PROFILE)) {
+    testDb = open({name: 'journal_test.db'});
+    testDb.executeSync('PRAGMA journal_mode=WAL;');
+    bootstrapMeta(testDb);
+    runMigrations(testDb);
+    loadChipsFrom(testDb);
+  } else {
+    loadChipsFrom(realDb);
+  }
 }
 
 export function initializeTestDatabase(): DB {
@@ -74,7 +85,6 @@ export function initializeTestDatabase(): DB {
 
 export function getDb(): DB {
   if (storage.getString(STORAGE_KEYS.ACTIVE_PROFILE)) {
-    // testDb must exist — set by initializeTestDatabase() before ACTIVE_PROFILE is written
     return testDb!;
   }
   return realDb;

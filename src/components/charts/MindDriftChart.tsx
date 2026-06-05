@@ -16,6 +16,7 @@ const LABEL_W = 68;   // left column for Y-axis labels
 const PAD_R = 10;     // right padding
 const AXIS_H = 20;    // bottom row for X-axis labels
 const DOT_R = 3.5;
+const JITTER_PX = 11; // max y-jitter in each direction within a valence band
 
 const SVG_H = CHART_H + AXIS_H;
 
@@ -35,6 +36,12 @@ function xPlot(i: number, n: number, w: number): number {
 
 function yPlot(valence: number): number {
   return (1 - valence) * CHART_H;
+}
+
+// Deterministic jitter from createdAt so layout is stable across renders
+function yJittered(valence: number, seed: number): number {
+  const jitter = ((seed % 97) / 97 - 0.5) * JITTER_PX * 2;
+  return Math.max(DOT_R, Math.min(CHART_H - DOT_R, yPlot(valence) + jitter));
 }
 
 // Linear regression — returns predicted y at x=0 and x=n-1
@@ -150,12 +157,12 @@ export function MindDriftChart({data}: Props) {
             />
           )}
 
-          {/* Dots */}
+          {/* Dots — y-jittered by createdAt so same-valence points spread out */}
           {data.map((point, i) => (
             <Circle
               key={`${point.date}-${i}`}
               cx={xPlot(i, n, width)}
-              cy={yPlot(VALENCE[point.valenceGroup] ?? 0.5)}
+              cy={yJittered(VALENCE[point.valenceGroup] ?? 0.5, point.createdAt)}
               r={DOT_R}
               fill={DOT_COLOR[point.valenceGroup] ?? Colors.inkGhost}
               opacity={0.85}

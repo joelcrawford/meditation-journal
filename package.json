@@ -6,7 +6,7 @@
     "ios": "react-native run-ios",
     "local": "concurrently \"react-native start\" \"react-native run-ios --simulator 'iPhone 16'\"",
     "preextract": "rm -f ios/Pods/ReactNativeDependencies/.last_build_configuration ios/Pods/React-Core-prebuilt/.last_build_configuration ios/Pods/hermes-engine/.last_build_configuration && (find ios/Pods/ReactNativeDependencies/framework -mindepth 1 -delete 2>/dev/null; rmdir ios/Pods/ReactNativeDependencies/framework 2>/dev/null; find ios/Pods/React-Core-prebuilt/React.xcframework -mindepth 1 -delete 2>/dev/null; rmdir ios/Pods/React-Core-prebuilt/React.xcframework 2>/dev/null; true) && cd ios/Pods && node ../../node_modules/react-native/third-party-podspecs/replace_dependencies_version.js -c Release -r 0.85.3 -p . && node ../../node_modules/react-native/scripts/replace-rncore-version.js -c Release -r 0.85.3 -p .",
-    "device": "npm run preextract && concurrently \"react-native start\" \"react-native run-ios --device 'Bingo Bango'\"",
+    "device": "npm run preextract && (lsof -ti:8081 | xargs kill -9 2>/dev/null; true) && concurrently \"react-native start\" \"react-native run-ios --device 'Bingo Bango'\"",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
