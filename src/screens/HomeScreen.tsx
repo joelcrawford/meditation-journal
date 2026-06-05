@@ -28,6 +28,7 @@ import {
   isWithinGraceWindow,
 } from '../utils/date';
 import {storage, STORAGE_KEYS} from '../storage/mmkv';
+import {reloadChips} from '../db';
 import type {Session, Checkin, MeditationObject} from '../types';
 import type {RootStackParamList} from '../navigation/types';
 
@@ -48,22 +49,22 @@ function useHomeData() {
     storage.getString(STORAGE_KEYS.ACTIVE_PROFILE),
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      setSessions(sessionService.getTodaysSessions());
-      setCheckins(checkinService.getTodayCheckins());
-      setStreak(streakService.getCurrentStreak());
-      setCurrentObject(meditationObjectService.getCurrentObject());
-      setActiveProfile(storage.getString(STORAGE_KEYS.ACTIVE_PROFILE));
-    }, []),
-  );
+  const refresh = useCallback(() => {
+    setSessions(sessionService.getTodaysSessions());
+    setCheckins(checkinService.getTodayCheckins());
+    setStreak(streakService.getCurrentStreak());
+    setCurrentObject(meditationObjectService.getCurrentObject());
+    setActiveProfile(storage.getString(STORAGE_KEYS.ACTIVE_PROFILE));
+  }, []);
 
-  return {sessions, setSessions, checkins, setCheckins, streak, currentObject, activeProfile, setActiveProfile};
+  useFocusEffect(refresh);
+
+  return {sessions, setSessions, checkins, setCheckins, streak, currentObject, activeProfile, setActiveProfile, refresh};
 }
 
 export function HomeScreen() {
   const navigation = useNavigation<Nav>();
-  const {sessions, setSessions, checkins, setCheckins, streak, currentObject, activeProfile, setActiveProfile} = useHomeData();
+  const {sessions, setSessions, checkins, setCheckins, streak, currentObject, activeProfile, refresh} = useHomeData();
 
   const isFirstRun =
     sessions.length === 0 &&
@@ -81,6 +82,13 @@ export function HomeScreen() {
     navigation.navigate('Stats');
   }
 
+  function handleDismissBanner() {
+    storage.remove(STORAGE_KEYS.ACTIVE_PROFILE);
+    reloadChips();
+    streakService.recomputeAndCache();
+    refresh();
+  }
+
   function beginEntry() {
     navigation.navigate('Before');
   }
@@ -92,7 +100,7 @@ export function HomeScreen() {
   if (isFirstRun) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        {activeProfile && <DevBanner profileName={activeProfile} onDismiss={() => { storage.remove(STORAGE_KEYS.ACTIVE_PROFILE); setActiveProfile(undefined); }} />}
+        {activeProfile && <DevBanner profileName={activeProfile} onDismiss={handleDismissBanner} />}
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.content}>
@@ -109,7 +117,7 @@ export function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      {activeProfile && <DevBanner profileName={activeProfile} onDismiss={() => { storage.remove(STORAGE_KEYS.ACTIVE_PROFILE); setActiveProfile(undefined); }} />}
+      {activeProfile && <DevBanner profileName={activeProfile} onDismiss={handleDismissBanner} />}
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <HomeHeader onSettingsPress={openObjectSheet} onStatsPress={openStats} />
         <StreakCard streak={streak} />

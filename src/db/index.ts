@@ -1,7 +1,9 @@
 import {open, type DB} from '@op-engineering/op-sqlite';
 import {MIGRATIONS} from './migrations';
+import {storage, STORAGE_KEYS} from '../storage/mmkv';
 
-let db: DB;
+let realDb: DB;
+let testDb: DB | undefined;
 
 export interface Chip {
   id: number;
@@ -44,7 +46,7 @@ function runMigrations(database: DB): void {
   }
 }
 
-function loadChips(database: DB): void {
+function loadChipsFrom(database: DB): void {
   chipMap.clear();
   const result = database.executeSync(
     'SELECT * FROM chips ORDER BY list_name, sort_order',
@@ -53,13 +55,31 @@ function loadChips(database: DB): void {
 }
 
 export function initializeDatabase(): void {
-  db = open({name: 'journal.db'});
-  db.executeSync('PRAGMA journal_mode=WAL;');
-  bootstrapMeta(db);
-  runMigrations(db);
-  loadChips(db);
+  realDb = open({name: 'journal.db'});
+  realDb.executeSync('PRAGMA journal_mode=WAL;');
+  bootstrapMeta(realDb);
+  runMigrations(realDb);
+  loadChipsFrom(realDb);
+}
+
+export function initializeTestDatabase(): DB {
+  if (!testDb) {
+    testDb = open({name: 'journal_test.db'});
+    testDb.executeSync('PRAGMA journal_mode=WAL;');
+  }
+  bootstrapMeta(testDb);
+  runMigrations(testDb);
+  return testDb;
 }
 
 export function getDb(): DB {
-  return db;
+  if (storage.getString(STORAGE_KEYS.ACTIVE_PROFILE)) {
+    // testDb must exist — set by initializeTestDatabase() before ACTIVE_PROFILE is written
+    return testDb!;
+  }
+  return realDb;
+}
+
+export function reloadChips(): void {
+  loadChipsFrom(getDb());
 }

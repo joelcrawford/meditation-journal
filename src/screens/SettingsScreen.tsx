@@ -16,7 +16,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {Colors, Radius, Spacing, Typography} from '../theme';
 import {storage, STORAGE_KEYS} from '../storage/mmkv';
 import {notificationService} from '../services/NotificationService';
-import {getDb} from '../db';
+import {getDb, reloadChips} from '../db';
 import {bellDisplayName} from '../constants/bells';
 import {seedProfile, type ProfileName} from '../db/seedProfiles';
 import {streakService} from '../services';
@@ -104,6 +104,8 @@ export function SettingsScreen() {
       if (!enabling) {
         storage.remove(STORAGE_KEYS.ACTIVE_PROFILE);
         setActiveProfile(undefined);
+        reloadChips();
+        streakService.recomputeAndCache();
       }
     }
   }
@@ -137,6 +139,7 @@ export function SettingsScreen() {
                 onPress: () => {
                   storage.remove(STORAGE_KEYS.ACTIVE_PROFILE);
                   setActiveProfile(undefined);
+                  reloadChips();
                   doReset();
                 },
               },
@@ -156,8 +159,9 @@ export function SettingsScreen() {
               style: 'destructive',
               onPress: () => {
                 seedProfile(name);
-                streakService.recomputeAndCache();
                 storage.set(STORAGE_KEYS.ACTIVE_PROFILE, name);
+                reloadChips();
+                streakService.recomputeAndCache();
                 setActiveProfile(name);
                 navigation.popToTop();
               },

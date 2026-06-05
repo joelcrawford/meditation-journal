@@ -1,4 +1,4 @@
-import {getDb} from './index';
+import {initializeTestDatabase} from './index';
 import {getDateNDaysAgo} from '../utils/date';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -146,7 +146,7 @@ function generateDT(dtMean: number): {json: string; score: number | null} {
 // ─── Main seed function ───────────────────────────────────────────────────────
 
 export function seedProfile(profileName: ProfileName): void {
-  const db = getDb();
+  const db = initializeTestDatabase();
   const profile = PROFILES[profileName];
 
   // ── 1. Load chip IDs grouped by list ────────────────────────────────────────
