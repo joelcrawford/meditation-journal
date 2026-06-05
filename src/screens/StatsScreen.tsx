@@ -15,6 +15,7 @@ import {statsRepository} from '../repositories/StatsRepository';
 import {MindDriftChart} from '../components/charts/MindDriftChart';
 import {DistractionBarsChart} from '../components/charts/DistractionBarsChart';
 import {ToggleLeanChart} from '../components/charts/ToggleLeanChart';
+import {SpectrumRiverChart} from '../components/charts/SpectrumRiverChart';
 import type {RootStackParamList} from '../navigation/types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Stats'>;
@@ -40,6 +41,10 @@ export function StatsScreen() {
   );
   const toggleLeansData = useMemo(
     () => statsRepository.getToggleLeans(range),
+    [range],
+  );
+  const riverData = useMemo(
+    () => statsRepository.getSpectrumRiverData(range),
     [range],
   );
 
@@ -94,10 +99,10 @@ export function StatsScreen() {
         </View>
 
         <Text style={[styles.sectionLabel, styles.sectionLabelSpaced]}>CHECK-INS</Text>
-        <PlaceholderCard
-          title="Spectrum river"
-          detail="Day arc — morning / afternoon / evening D/T score"
-        />
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Spectrum river</Text>
+          <SpectrumRiverChart data={riverData} />
+        </View>
         <PlaceholderCard
           title="Toggle map"
           detail="Scatter — lean × frequency, sized by consistency"
