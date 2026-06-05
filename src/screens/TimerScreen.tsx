@@ -19,6 +19,7 @@ import {storage, STORAGE_KEYS} from '../storage/mmkv';
 import {sessionService, meditationObjectService} from '../services';
 import {notificationService} from '../services/NotificationService';
 import {bellService} from '../services/BellService';
+import {liveActivityService} from '../services/LiveActivityService';
 import {getDayCount} from '../utils/date';
 import type {RootStackParamList} from '../navigation/types';
 
@@ -94,6 +95,7 @@ export function TimerScreen() {
     endTimeRef.current = null;
 // deactivateKeepAwake();
     bellService.playBell().catch(() => {});
+    liveActivityService.end().catch(() => {});
     storage.remove(STORAGE_KEYS.TIMER_STATE);
     storage.set(STORAGE_KEYS.TIMER_ELAPSED, elapsedSecRef.current);
     navigation.replace('After', {sessionId});
@@ -151,6 +153,7 @@ export function TimerScreen() {
 // activateKeepAwake(); // TODO: add native keep-awake
     bellService.playBell().catch(() => {});
     scheduleEndNotification(endMs).catch(() => {});
+    liveActivityService.start(currentObject.name, endMs).catch(() => {});
     startInterval();
   }
 
@@ -158,6 +161,7 @@ export function TimerScreen() {
     stopInterval();
     cancelEndNotification();
     endTimeRef.current = null;
+    liveActivityService.end().catch(() => {});
 // deactivateKeepAwake();
     storage.set(STORAGE_KEYS.TIMER_STATE, JSON.stringify({
       sessionId,
@@ -173,19 +177,28 @@ export function TimerScreen() {
     const endMs = Date.now() + remainingSec * 1000;
     endTimeRef.current = endMs;
     scheduleEndNotification(endMs).catch(() => {});
+    liveActivityService.start(currentObject.name, endMs).catch(() => {});
     setPhase('running');
 // activateKeepAwake(); // TODO: add native keep-awake
     startInterval();
   }
 
   function handleAdjustRunning(deltaMin: number) {
-    setRemainingSec(prev => Math.max(60, Math.min(prev + deltaMin * 60, 10800)));
+    setRemainingSec(prev => {
+      const next = Math.max(60, Math.min(prev + deltaMin * 60, 10800));
+      const newEndMs = Date.now() + next * 1000;
+      endTimeRef.current = newEndMs;
+      liveActivityService.update(newEndMs).catch(() => {});
+      scheduleEndNotification(newEndMs).catch(() => {});
+      return next;
+    });
   }
 
   function handleFinishEarly() {
     stopInterval();
     cancelEndNotification();
     endTimeRef.current = null;
+    liveActivityService.end().catch(() => {});
     storage.remove(STORAGE_KEYS.TIMER_STATE);
     storage.set(STORAGE_KEYS.TIMER_ELAPSED, elapsedSecRef.current);
     navigation.replace('After', {sessionId});
@@ -195,6 +208,7 @@ export function TimerScreen() {
     stopInterval();
     cancelEndNotification();
     endTimeRef.current = null;
+    liveActivityService.end().catch(() => {});
 // deactivateKeepAwake();
     storage.remove(STORAGE_KEYS.TIMER_STATE);
     sessionService.deleteSession(sessionId);

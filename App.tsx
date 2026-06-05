@@ -27,6 +27,9 @@ export default function App() {
       if (granted) notificationService.topUp();
     });
 
+    // Clear any stale timer-end notifications from previous sessions
+    notificationService.cancelAllTimerEndNotifications().catch(() => {});
+
     // Handle any pending navigation from a background notification tap
     const pending = storage.getString(STORAGE_KEYS.PENDING_NAV);
     if (pending) {

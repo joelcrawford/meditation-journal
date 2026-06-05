@@ -156,6 +156,14 @@ class NotificationService {
   async cancelTimerEnd(notifId: string): Promise<void> {
     await notifee.cancelTriggerNotification(notifId);
   }
+
+  async cancelAllTimerEndNotifications(): Promise<void> {
+    const pending = await notifee.getTriggerNotifications();
+    const timerEndIds = pending
+      .filter(n => n.notification.id?.startsWith('timer-end-'))
+      .map(n => n.notification.id!);
+    await Promise.all(timerEndIds.map(id => notifee.cancelTriggerNotification(id)));
+  }
 }
 
 export const notificationService = new NotificationService();
