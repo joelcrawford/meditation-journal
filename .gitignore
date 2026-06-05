@@ -9,6 +9,7 @@ _auth/
 
 # Design docs
 docs/
+logs/
 
 # Build artifacts
 ReactNativeDependencies/
