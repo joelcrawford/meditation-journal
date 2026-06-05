@@ -23,9 +23,11 @@ done
 AUTH_DIR="ios/_auth"
 DIST_CERT_P12="$AUTH_DIR/meditation-journal-dist-cert.p12"
 PROFILE_PATH="$AUTH_DIR/meditationjournal_appstore.mobileprovision"
+WIDGET_PROFILE_PATH="$AUTH_DIR/meditationjournal_widget_appstore.mobileprovision"
 API_KEY_PATH="$AUTH_DIR/AuthKey_${APPLE_CONNECT_KEY_ID}.p8"
 SIGNING_IDENTITY="Apple Distribution: Joel Crawford (5469PA59T3)"
 BUNDLE_ID="com.havehopeyo.meditationjournal"
+WIDGET_BUNDLE_ID="com.havehopeyo.meditationjournal.MeditationJournalWidget"
 WORKSPACE="ios/MeditationJournal.xcworkspace"
 SCHEME="MeditationJournal"
 INFO_PLIST="ios/MeditationJournal/Info.plist"
@@ -34,21 +36,32 @@ EXPORT_PATH="/tmp/MeditationJournal-export"
 EXPORT_OPTIONS="/tmp/MeditationJournal-export-options.plist"
 DECODED_PROFILE="/tmp/meditationjournal-profile.plist"
 UUID_FILE="/tmp/meditationjournal-profile-uuid.txt"
+WIDGET_UUID_FILE="/tmp/meditationjournal-widget-profile-uuid.txt"
 LOG="/tmp/meditationjournal-ship.log"
+
+# project.pbxproj patching — Release XCBuildConfiguration IDs (stable, set by Xcode)
+PBXPROJ="ios/MeditationJournal.xcodeproj/project.pbxproj"
+PBXPROJ_BACKUP="/tmp/meditationjournal-project-backup.pbxproj"
+MAIN_CONFIG_ID="13B07F951A680F5B00A75B9A"
+WIDGET_CONFIG_ID="5DA4522C2FD23D4C00BC1AF1"
 
 KEYCHAIN_PATH="$HOME/Library/Keychains/meditationjournal-build.keychain-db"
 KEYCHAIN_PASSWORD="meditationjournal-tmp"
 
 ORIGINAL_KEYCHAINS=$(security list-keychains -d user | xargs)
 STEP=0
-TOTAL=7
+TOTAL=8
 
 > "$LOG"
 
 cleanup() {
   security list-keychains -d user -s $ORIGINAL_KEYCHAINS 2>/dev/null || true
   security delete-keychain "$KEYCHAIN_PATH" 2>/dev/null || true
-  rm -f "$EXPORT_OPTIONS" "$DECODED_PROFILE" "$UUID_FILE"
+  rm -f "$EXPORT_OPTIONS" "$DECODED_PROFILE" "$UUID_FILE" "$WIDGET_UUID_FILE"
+  if [ -f "$PBXPROJ_BACKUP" ]; then
+    cp "$PBXPROJ_BACKUP" "$PBXPROJ"
+    rm -f "$PBXPROJ_BACKUP"
+  fi
 }
 trap cleanup EXIT
 
@@ -99,11 +112,19 @@ step_keychain() {
 
 step_profile() {
   set -e
+  mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+
+  # Main app profile
   security cms -D -i "$PROFILE_PATH" -o "$DECODED_PROFILE"
   /usr/libexec/PlistBuddy -c 'Print :UUID' "$DECODED_PROFILE" > "$UUID_FILE"
   rm -f "$DECODED_PROFILE"
-  mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
   cp "$PROFILE_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$(cat "$UUID_FILE").mobileprovision"
+
+  # Widget extension profile
+  security cms -D -i "$WIDGET_PROFILE_PATH" -o "$DECODED_PROFILE"
+  /usr/libexec/PlistBuddy -c 'Print :UUID' "$DECODED_PROFILE" > "$WIDGET_UUID_FILE"
+  rm -f "$DECODED_PROFILE"
+  cp "$WIDGET_PROFILE_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$(cat "$WIDGET_UUID_FILE").mobileprovision"
 }
 
 step_bump_build() {
@@ -112,6 +133,67 @@ step_bump_build() {
   NEXT=$((CURRENT + 1))
   /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $NEXT" "$INFO_PLIST"
   echo "Build number: $CURRENT → $NEXT"
+}
+
+step_patch_project() {
+  set -e
+  cp "$PBXPROJ" "$PBXPROJ_BACKUP"
+  PROFILE_UUID=$(cat "$UUID_FILE")
+  WIDGET_UUID=$(cat "$WIDGET_UUID_FILE")
+  # Patch Release XCBuildConfiguration blocks: Manual signing + per-target profile UUIDs.
+  # Backup is restored by cleanup() on EXIT regardless of success or failure.
+  python3 - "$PBXPROJ" \
+    "$MAIN_CONFIG_ID" "$PROFILE_UUID" \
+    "$WIDGET_CONFIG_ID" "$WIDGET_UUID" << 'PYEOF'
+import sys, re
+
+path = sys.argv[1]
+patches = {}
+for i in range(2, len(sys.argv), 2):
+    patches[sys.argv[i]] = sys.argv[i + 1]
+
+with open(path, 'r') as f:
+    content = f.read()
+
+for cid, uuid in patches.items():
+    marker = cid + ' /* Release */'
+    start = content.find(marker)
+    if start == -1:
+        sys.exit(f'ERROR: Config block {cid} not found in project.pbxproj')
+    depth, i, end = 0, start, -1
+    while i < len(content):
+        if content[i] == '{':
+            depth += 1
+        elif content[i] == '}':
+            depth -= 1
+            if depth == 0:
+                end = i + 1
+                break
+        i += 1
+    if end == -1:
+        sys.exit(f'ERROR: Could not find end of block {cid}')
+    block = content[start:end]
+    block = block.replace('CODE_SIGN_IDENTITY = "Apple Development";',
+                          'CODE_SIGN_IDENTITY = "Apple Distribution";')
+    block = block.replace('CODE_SIGN_STYLE = Automatic;', 'CODE_SIGN_STYLE = Manual;')
+    if 'PROVISIONING_PROFILE =' not in block:
+        if 'PROVISIONING_PROFILE_SPECIFIER' in block:
+            block = block.replace(
+                '\t\t\t\tPROVISIONING_PROFILE_SPECIFIER',
+                f'\t\t\t\tPROVISIONING_PROFILE = "{uuid}";\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER')
+        else:
+            block = block.replace(
+                '\t\t\t\tPRODUCT_NAME =',
+                f'\t\t\t\tPROVISIONING_PROFILE = "{uuid}";\n\t\t\t\tPRODUCT_NAME =')
+    else:
+        block = re.sub(r'PROVISIONING_PROFILE = "[^"]*";',
+                       f'PROVISIONING_PROFILE = "{uuid}";', block)
+    content = content[:start] + block + content[end:]
+
+with open(path, 'w') as f:
+    f.write(content)
+print(f'Patched {len(patches)} Release config(s) for manual signing')
+PYEOF
 }
 
 step_preextract() {
@@ -138,7 +220,6 @@ step_preextract() {
 
 step_archive() {
   set -e
-  PROFILE_UUID=$(cat "$UUID_FILE")
   rm -rf "$ARCHIVE_PATH"
   xcodebuild archive \
     -workspace "$WORKSPACE" \
@@ -148,7 +229,6 @@ step_archive() {
     -destination "generic/platform=iOS" \
     CODE_SIGN_STYLE=Manual \
     "CODE_SIGN_IDENTITY=$SIGNING_IDENTITY" \
-    "PROVISIONING_PROFILE=$PROFILE_UUID" \
     DEVELOPMENT_TEAM=5469PA59T3 \
     "OTHER_CODE_SIGN_FLAGS=--keychain $KEYCHAIN_PATH"
 }
@@ -156,6 +236,7 @@ step_archive() {
 step_export() {
   set -e
   PROFILE_UUID=$(cat "$UUID_FILE")
+  WIDGET_PROFILE_UUID=$(cat "$WIDGET_UUID_FILE")
   cat > "$EXPORT_OPTIONS" << PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -171,6 +252,8 @@ step_export() {
   <dict>
     <key>$BUNDLE_ID</key>
     <string>$PROFILE_UUID</string>
+    <key>$WIDGET_BUNDLE_ID</key>
+    <string>$WIDGET_PROFILE_UUID</string>
   </dict>
   <key>stripSwiftSymbols</key>
   <true/>
@@ -208,6 +291,7 @@ echo ""
 run_step "Setting up signing keychain    " step_keychain
 run_step "Installing provisioning profile" step_profile
 run_step "Bumping build number           " step_bump_build
+run_step "Patching project for signing   " step_patch_project
 run_step "Pre-extracting RN prebuilt libs" step_preextract
 run_step "Xcode archive (Release)        " step_archive
 run_step "Exporting IPA                  " step_export
