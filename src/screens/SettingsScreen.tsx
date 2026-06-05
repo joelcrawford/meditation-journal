@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Switch,
   Alert,
+  ActionSheetIOS,
   StyleSheet,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -17,6 +18,8 @@ import {storage, STORAGE_KEYS} from '../storage/mmkv';
 import {notificationService} from '../services/NotificationService';
 import {getDb} from '../db';
 import {bellDisplayName} from '../constants/bells';
+import {seedProfile, type ProfileName} from '../db/seedProfiles';
+import {streakService} from '../services';
 import type {RootStackParamList} from '../navigation/types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -42,8 +45,24 @@ function formatTimeStr(str: string): string {
   return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
 }
 
+const PROFILE_NAMES: ProfileName[] = ['bill', 'sally', 'maryanne', 'bartholemew'];
+const PROFILE_DISPLAY: Record<ProfileName, string> = {
+  bill: 'Bill (7 days, beginner)',
+  sally: 'Sally (14 days, early practice)',
+  maryanne: 'Maryanne (50 days, developing)',
+  bartholemew: 'Bartholemew (150 days, experienced)',
+};
+
 export function SettingsScreen() {
   const navigation = useNavigation<Nav>();
+
+  const [adminTapCount, setAdminTapCount] = useState(0);
+  const [adminEnabled, setAdminEnabled] = useState(
+    storage.getBoolean(STORAGE_KEYS.ADMIN_ENABLED) ?? false,
+  );
+  const [activeProfile, setActiveProfile] = useState<string | undefined>(
+    storage.getString(STORAGE_KEYS.ACTIVE_PROFILE),
+  );
 
   const [morningTime, setMorningTime] = useState(
     storage.getString(STORAGE_KEYS.NOTIF_MORNING) ?? '08:00',
@@ -73,6 +92,81 @@ export function SettingsScreen() {
   useFocusEffect(() => {
     setCurrentBell(storage.getString(STORAGE_KEYS.BELL_SOUND) ?? 'tibetan-bowl');
   });
+
+  function handleVersionTap() {
+    const next = adminTapCount + 1;
+    setAdminTapCount(next);
+    if (next >= 5) {
+      setAdminTapCount(0);
+      const enabling = !adminEnabled;
+      storage.set(STORAGE_KEYS.ADMIN_ENABLED, enabling);
+      setAdminEnabled(enabling);
+      if (!enabling) {
+        storage.remove(STORAGE_KEYS.ACTIVE_PROFILE);
+        setActiveProfile(undefined);
+      }
+    }
+  }
+
+  function handlePickProfile() {
+    const options = [
+      ...PROFILE_NAMES.map(n => PROFILE_DISPLAY[n]),
+      'Reset to real data',
+      'Cancel',
+    ];
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        title: 'Load test profile',
+        message: 'This permanently replaces all app data.',
+        options,
+        destructiveButtonIndex: options.length - 2,
+        cancelButtonIndex: options.length - 1,
+      },
+      buttonIndex => {
+        if (buttonIndex === options.length - 1) return; // Cancel
+        if (buttonIndex === options.length - 2) {
+          // Reset to real data — same wipe as the main Reset button
+          Alert.alert(
+            'Reset all data?',
+            'All sessions, check-ins, and preferences will be permanently deleted.',
+            [
+              {text: 'Cancel', style: 'cancel'},
+              {
+                text: 'Reset',
+                style: 'destructive',
+                onPress: () => {
+                  storage.remove(STORAGE_KEYS.ACTIVE_PROFILE);
+                  setActiveProfile(undefined);
+                  doReset();
+                },
+              },
+            ],
+          );
+          return;
+        }
+        const name = PROFILE_NAMES[buttonIndex];
+        const display = PROFILE_DISPLAY[name];
+        Alert.alert(
+          `Load ${display.split(' (')[0]}?`,
+          'This permanently replaces all your current data with seed data. There is no undo.',
+          [
+            {text: 'Cancel', style: 'cancel'},
+            {
+              text: 'Load profile',
+              style: 'destructive',
+              onPress: () => {
+                seedProfile(name);
+                streakService.recomputeAndCache();
+                storage.set(STORAGE_KEYS.ACTIVE_PROFILE, name);
+                setActiveProfile(name);
+                navigation.popToTop();
+              },
+            },
+          ],
+        );
+      },
+    );
+  }
 
   function handleTimeChange(
     slot: 'morning' | 'afternoon' | 'evening',
@@ -260,15 +354,50 @@ export function SettingsScreen() {
         {/* About */}
         <Text style={styles.sectionLabel}>ABOUT</Text>
         <View style={styles.card}>
-          <View style={[styles.row, styles.rowBorder]}>
+          <TouchableOpacity
+            style={[styles.row, styles.rowBorder]}
+            activeOpacity={1}
+            onPress={handleVersionTap}>
             <Text style={styles.rowLabel}>Version</Text>
             <Text style={styles.infoValue}>{pkgVersion}</Text>
-          </View>
+          </TouchableOpacity>
           <View style={styles.row}>
             <Text style={styles.rowLabel}>Minimum iOS</Text>
             <Text style={styles.infoValue}>16.4</Text>
           </View>
         </View>
+
+        {/* Admin (unlocked by 5 taps on Version) */}
+        {adminEnabled && (
+          <>
+            <Text style={styles.sectionLabel}>ADMIN</Text>
+            <View style={styles.card}>
+              <TouchableOpacity
+                style={[styles.row, styles.rowBorder]}
+                onPress={handlePickProfile}>
+                <View style={styles.rowLeft}>
+                  <View style={[styles.iconBox, {backgroundColor: '#fde8e8'}]}>
+                    <Text style={styles.iconText}>🧪</Text>
+                  </View>
+                  <View>
+                    <Text style={styles.rowLabel}>Test profile</Text>
+                    <Text style={styles.rowSub}>
+                      {activeProfile
+                        ? PROFILE_DISPLAY[activeProfile as ProfileName].split(' (')[0]
+                        : 'None — using real data'}
+                    </Text>
+                  </View>
+                </View>
+                <Text style={styles.chevron}>›</Text>
+              </TouchableOpacity>
+              <View style={styles.row}>
+                <Text style={[styles.rowSub, {flex: 1}]}>
+                  Tap Version 5x to hide this section. Profiles permanently replace all data.
+                </Text>
+              </View>
+            </View>
+          </>
+        )}
 
         {/* Data */}
         <Text style={styles.sectionLabel}>DATA</Text>

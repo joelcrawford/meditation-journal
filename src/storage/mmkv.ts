@@ -17,4 +17,6 @@ export const STORAGE_KEYS = {
   BELL_SOUND: 'bell.sound',
   TIMER_ELAPSED: 'timer.elapsed',
   TIMER_STATE: 'timer.paused_state',
+  ADMIN_ENABLED: 'dev.admin_enabled',
+  ACTIVE_PROFILE: 'dev.active_profile',
 } as const;

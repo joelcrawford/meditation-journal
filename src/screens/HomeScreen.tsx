@@ -27,6 +27,7 @@ import {
   getLocalDateString,
   isWithinGraceWindow,
 } from '../utils/date';
+import {storage, STORAGE_KEYS} from '../storage/mmkv';
 import type {Session, Checkin, MeditationObject} from '../types';
 import type {RootStackParamList} from '../navigation/types';
 
@@ -43,6 +44,9 @@ function useHomeData() {
   const [currentObject, setCurrentObject] = useState<MeditationObject>(() =>
     meditationObjectService.getCurrentObject(),
   );
+  const [activeProfile, setActiveProfile] = useState<string | undefined>(
+    storage.getString(STORAGE_KEYS.ACTIVE_PROFILE),
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -50,15 +54,16 @@ function useHomeData() {
       setCheckins(checkinService.getTodayCheckins());
       setStreak(streakService.getCurrentStreak());
       setCurrentObject(meditationObjectService.getCurrentObject());
+      setActiveProfile(storage.getString(STORAGE_KEYS.ACTIVE_PROFILE));
     }, []),
   );
 
-  return {sessions, setSessions, checkins, setCheckins, streak, currentObject};
+  return {sessions, setSessions, checkins, setCheckins, streak, currentObject, activeProfile, setActiveProfile};
 }
 
 export function HomeScreen() {
   const navigation = useNavigation<Nav>();
-  const {sessions, setSessions, checkins, setCheckins, streak, currentObject} = useHomeData();
+  const {sessions, setSessions, checkins, setCheckins, streak, currentObject, activeProfile, setActiveProfile} = useHomeData();
 
   const isFirstRun =
     sessions.length === 0 &&
@@ -87,6 +92,7 @@ export function HomeScreen() {
   if (isFirstRun) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
+        {activeProfile && <DevBanner profileName={activeProfile} onDismiss={() => { storage.remove(STORAGE_KEYS.ACTIVE_PROFILE); setActiveProfile(undefined); }} />}
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.content}>
@@ -103,6 +109,7 @@ export function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
+      {activeProfile && <DevBanner profileName={activeProfile} onDismiss={() => { storage.remove(STORAGE_KEYS.ACTIVE_PROFILE); setActiveProfile(undefined); }} />}
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <HomeHeader onSettingsPress={openObjectSheet} onStatsPress={openStats} />
         <StreakCard streak={streak} />
@@ -194,6 +201,18 @@ function HomeHeader({
           </Svg>
         </TouchableOpacity>
       </View>
+    </View>
+  );
+}
+
+function DevBanner({profileName, onDismiss}: {profileName: string; onDismiss: () => void}) {
+  const display = profileName.charAt(0).toUpperCase() + profileName.slice(1);
+  return (
+    <View style={styles.devBanner}>
+      <Text style={styles.devBannerText}>[DEV] Viewing as {display}</Text>
+      <TouchableOpacity onPress={onDismiss} hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
+        <Text style={styles.devBannerClose}>✕</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -745,5 +764,24 @@ const styles = StyleSheet.create({
   miniStatsLink: {
     ...Typography.label,
     color: Colors.moss,
+  },
+  devBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#c0392b',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  devBannerText: {
+    fontFamily: 'Newsreader-Medium',
+    fontSize: 13,
+    color: '#fff',
+  },
+  devBannerClose: {
+    fontFamily: 'Newsreader-Regular',
+    fontSize: 16,
+    color: '#fff',
+    opacity: 0.85,
   },
 });
