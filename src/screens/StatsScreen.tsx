@@ -13,6 +13,8 @@ import Svg, {Line} from 'react-native-svg';
 import {Colors, Radius, Spacing, Typography} from '../theme';
 import {statsRepository} from '../repositories/StatsRepository';
 import {MindDriftChart} from '../components/charts/MindDriftChart';
+import {DistractionBarsChart} from '../components/charts/DistractionBarsChart';
+import {ToggleLeanChart} from '../components/charts/ToggleLeanChart';
 import type {RootStackParamList} from '../navigation/types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Stats'>;
@@ -30,6 +32,14 @@ export function StatsScreen() {
 
   const driftData = useMemo(
     () => statsRepository.getBeforeMindDrift(range),
+    [range],
+  );
+  const distractionData = useMemo(
+    () => statsRepository.getDistractionFrequency(range),
+    [range],
+  );
+  const toggleLeansData = useMemo(
+    () => statsRepository.getToggleLeans(range),
     [range],
   );
 
@@ -74,14 +84,14 @@ export function StatsScreen() {
         </View>
 
         <Text style={[styles.sectionLabel, styles.sectionLabelSpaced]}>THE PRACTICE</Text>
-        <PlaceholderCard
-          title="Distractions during sits"
-          detail="Top 5 by frequency"
-        />
-        <PlaceholderCard
-          title="D/T toggle leans"
-          detail="Diverging centre-bar per toggle pair"
-        />
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Distractions during sits</Text>
+          <DistractionBarsChart data={distractionData} />
+        </View>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>D/T toggle leans</Text>
+          <ToggleLeanChart data={toggleLeansData} />
+        </View>
 
         <Text style={[styles.sectionLabel, styles.sectionLabelSpaced]}>CHECK-INS</Text>
         <PlaceholderCard
