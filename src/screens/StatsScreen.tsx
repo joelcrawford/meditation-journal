@@ -16,7 +16,20 @@ import {MindDriftChart} from '../components/charts/MindDriftChart';
 import {DistractionBarsChart} from '../components/charts/DistractionBarsChart';
 import {ToggleLeanChart} from '../components/charts/ToggleLeanChart';
 import {SpectrumRiverChart} from '../components/charts/SpectrumRiverChart';
+import {ToggleMapChart} from '../components/charts/ToggleMapChart';
 import type {RootStackParamList} from '../navigation/types';
+
+function formatHours(seconds: number): string {
+  const h = Math.round(seconds / 3600);
+  return h < 1 ? '< 1 h' : `${h} h`;
+}
+
+function formatSinceDate(dateStr: string | null): string {
+  if (!dateStr) return '—';
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const [y, m] = dateStr.split('-');
+  return `${months[parseInt(m, 10) - 1]} ${y}`;
+}
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Stats'>;
 
@@ -46,6 +59,15 @@ export function StatsScreen() {
   const riverData = useMemo(
     () => statsRepository.getSpectrumRiverData(range),
     [range],
+  );
+  const toggleMapData = useMemo(
+    () => statsRepository.getToggleMapData(range),
+    [range],
+  );
+  // Summary stats are always all-time — not filtered by range
+  const summaryStats = useMemo(
+    () => statsRepository.getSummaryStats(),
+    [],
   );
 
   return (
@@ -103,29 +125,29 @@ export function StatsScreen() {
           <Text style={styles.cardTitle}>Spectrum river</Text>
           <SpectrumRiverChart data={riverData} />
         </View>
-        <PlaceholderCard
-          title="Toggle map"
-          detail="Scatter — lean × frequency, sized by consistency"
-        />
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Toggle map</Text>
+          <ToggleMapChart data={toggleMapData} />
+        </View>
 
         <Text style={[styles.sectionLabel, styles.sectionLabelSpaced]}>BY THE NUMBERS</Text>
-        <PlaceholderCard
-          title="Summary stats"
-          detail="Total sits · streak · time · sitting since"
-        />
+        <View style={styles.card}>
+          {[
+            {label: 'Total sits',      value: String(summaryStats.totalSits)},
+            {label: 'Current streak',  value: `${summaryStats.currentStreak} ${summaryStats.currentStreak === 1 ? 'day' : 'days'}`},
+            {label: 'Longest streak',  value: `${summaryStats.longestStreak} ${summaryStats.longestStreak === 1 ? 'day' : 'days'}`},
+            {label: 'Total time',      value: formatHours(summaryStats.totalSeconds)},
+            {label: 'Sitting since',   value: formatSinceDate(summaryStats.sittingSince)},
+          ].map((row, i, arr) => (
+            <View key={row.label} style={[styles.statRow, i < arr.length - 1 && styles.statRowBorder]}>
+              <Text style={styles.statLabel}>{row.label}</Text>
+              <Text style={styles.statValue}>{row.value}</Text>
+            </View>
+          ))}
+        </View>
 
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-function PlaceholderCard({title, detail}: {title: string; detail: string}) {
-  return (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>{title}</Text>
-      <Text style={styles.cardDetail}>{detail}</Text>
-      <View style={styles.cardPlaceholder} />
-    </View>
   );
 }
 
@@ -208,13 +230,24 @@ const styles = StyleSheet.create({
     color: Colors.ink,
     marginBottom: Spacing.sp1,
   },
-  cardDetail: {
-    ...Typography.caption,
-    marginBottom: Spacing.sp4,
+  statRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 11,
   },
-  cardPlaceholder: {
-    height: 120,
-    backgroundColor: Colors.stone100,
-    borderRadius: Radius.sm,
+  statRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.stone100,
+  },
+  statLabel: {
+    fontFamily: 'Newsreader-Regular',
+    fontSize: 15,
+    color: Colors.inkSoft,
+  },
+  statValue: {
+    fontFamily: 'Fraunces-Regular',
+    fontSize: 17,
+    color: Colors.ink,
   },
 });
