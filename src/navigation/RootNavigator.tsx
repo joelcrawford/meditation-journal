@@ -10,6 +10,7 @@ import {CheckinResultScreen} from '../screens/CheckinResultScreen';
 import {MeditationObjectSheet} from '../screens/MeditationObjectSheet';
 import {SettingsScreen} from '../screens/SettingsScreen';
 import {BellPickerScreen} from '../screens/BellPickerScreen';
+import {StatsScreen} from '../screens/StatsScreen';
 import {Colors} from '../theme';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -50,6 +51,11 @@ export function RootNavigator() {
         name="Settings"
         component={SettingsScreen}
         options={{headerShown: true, title: 'Settings', headerBackTitle: 'Home'}}
+      />
+      <Stack.Screen
+        name="Stats"
+        component={StatsScreen}
+        options={{presentation: 'modal'}}
       />
     </Stack.Navigator>
   );

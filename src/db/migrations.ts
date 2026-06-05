@@ -183,4 +183,33 @@ export const MIGRATIONS: Migration[] = [
       });
     },
   },
+  {
+    version: 2,
+    up: (db: DB) => {
+      db.executeSync(`ALTER TABLE chips ADD COLUMN valence_group TEXT;`);
+
+      const settled = ['Calm', 'Open', 'Clear'];
+      const unsettled = ['Scattered', 'Heavy', 'Restless', 'Anxious', 'Emotionally charged'];
+      const mixed = ['Numb', 'Tired'];
+
+      settled.forEach(label =>
+        db.executeSync(
+          `UPDATE chips SET valence_group = 'settled' WHERE list_name = 'before_mind' AND label = ?`,
+          [label],
+        ),
+      );
+      unsettled.forEach(label =>
+        db.executeSync(
+          `UPDATE chips SET valence_group = 'unsettled' WHERE list_name = 'before_mind' AND label = ?`,
+          [label],
+        ),
+      );
+      mixed.forEach(label =>
+        db.executeSync(
+          `UPDATE chips SET valence_group = 'mixed' WHERE list_name = 'before_mind' AND label = ?`,
+          [label],
+        ),
+      );
+    },
+  },
 ];

@@ -71,3 +71,44 @@ export type NewObjectData = {
   description?: string;
   notes?: string;
 };
+
+// ─── Stats types ──────────────────────────────────────────────────────────────
+
+export type BeforeMindPoint = {
+  date: string;
+  createdAt: number;
+  valenceGroup: 'settled' | 'unsettled' | 'mixed';
+};
+
+export type ChipFrequency = {
+  label: string;
+  count: number;
+};
+
+export type ToggleLean = {
+  name: string;
+  lean: number; // 0–1, 0.5 = neutral, >0.5 = tiger
+};
+
+export type DayArc = {
+  date: string;
+  morning: number | null;
+  afternoon: number | null;
+  evening: number | null;
+  hasSit: boolean;
+};
+
+export type ToggleMapPoint = {
+  name: string;
+  lean: number;  // 0–1, 0.5 = neutral
+  freq: number;  // 0–1, fraction of check-ins where toggle was scored
+  consistency: number; // 0–1, 1 = always goes same way
+};
+
+export type SummaryStats = {
+  totalSits: number;
+  currentStreak: number;
+  longestStreak: number;
+  totalSeconds: number;
+  sittingSince: string | null;
+};

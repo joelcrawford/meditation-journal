@@ -8,6 +8,7 @@ export interface Chip {
   list_name: string;
   label: string;
   sort_order: number;
+  valence_group?: 'settled' | 'unsettled' | 'mixed';
 }
 
 export const chipMap = new Map<number, Chip>();

@@ -14,4 +14,5 @@ export type RootStackParamList = {
   MeditationObjectSheet: undefined;
   BellPicker: undefined;
   Settings: undefined;
+  Stats: undefined;
 };
