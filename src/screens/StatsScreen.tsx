@@ -53,7 +53,7 @@ export function StatsScreen() {
     [range],
   );
   const toggleLeansData = useMemo(
-    () => statsRepository.getToggleLeans(range),
+    () => statsRepository.getToggleHistory(range),
     [range],
   );
   const riverData = useMemo(

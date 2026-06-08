@@ -88,6 +88,11 @@ export function MindDriftChart({data}: Props) {
   const {y0, y1} = trendEnds(valences);
   const n = data.length;
 
+  const total = data.length;
+  const settledPct = Math.round((data.filter(p => p.valenceGroup === 'settled').length / total) * 100);
+  const mixedPct = Math.round((data.filter(p => p.valenceGroup === 'mixed').length / total) * 100);
+  const unsettledPct = Math.round((data.filter(p => p.valenceGroup === 'unsettled').length / total) * 100);
+
   return (
     <View
       style={styles.container}
@@ -107,7 +112,7 @@ export function MindDriftChart({data}: Props) {
             />
           ))}
 
-          {/* Y-axis labels */}
+          {/* Y-axis labels — Settled */}
           <SvgText
             x={LABEL_W - 6}
             y={10}
@@ -119,7 +124,7 @@ export function MindDriftChart({data}: Props) {
           </SvgText>
           <SvgText
             x={LABEL_W - 6}
-            y={22}
+            y={21}
             textAnchor="end"
             fontSize={9}
             fontFamily="Newsreader-Regular"
@@ -128,21 +133,64 @@ export function MindDriftChart({data}: Props) {
           </SvgText>
           <SvgText
             x={LABEL_W - 6}
-            y={CHART_H - 13}
+            y={32}
+            textAnchor="end"
+            fontSize={9}
+            fontFamily="Newsreader-Regular"
+            fill={Colors.moss}
+            opacity={0.7}>
+            {settledPct}%
+          </SvgText>
+
+          {/* Y-axis labels — Mixed (midpoint) */}
+          <SvgText
+            x={LABEL_W - 6}
+            y={CHART_H / 2 - 3}
             textAnchor="end"
             fontSize={10}
             fontFamily="Newsreader-Medium"
             fill={Colors.inkFaint}>
-            Unsettled
+            Mixed
           </SvgText>
           <SvgText
             x={LABEL_W - 6}
-            y={CHART_H - 1}
+            y={CHART_H / 2 + 9}
+            textAnchor="end"
+            fontSize={9}
+            fontFamily="Newsreader-Regular"
+            fill={Colors.inkGhost}
+            opacity={0.7}>
+            {mixedPct}%
+          </SvgText>
+
+          {/* Y-axis labels — Unsettled */}
+          <SvgText
+            x={LABEL_W - 6}
+            y={CHART_H - 24}
+            textAnchor="end"
+            fontSize={9}
+            fontFamily="Newsreader-Regular"
+            fill={Colors.clay}
+            opacity={0.7}>
+            {unsettledPct}%
+          </SvgText>
+          <SvgText
+            x={LABEL_W - 6}
+            y={CHART_H - 13}
             textAnchor="end"
             fontSize={9}
             fontFamily="Newsreader-Regular"
             fill={Colors.inkGhost}>
             scattered · heavy
+          </SvgText>
+          <SvgText
+            x={LABEL_W - 6}
+            y={CHART_H - 1}
+            textAnchor="end"
+            fontSize={10}
+            fontFamily="Newsreader-Medium"
+            fill={Colors.inkFaint}>
+            Unsettled
           </SvgText>
 
           {/* Trend line */}

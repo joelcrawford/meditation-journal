@@ -1,55 +1,60 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import Svg, {Circle, Line, Rect} from 'react-native-svg';
+import Svg, {Circle} from 'react-native-svg';
 import {Colors, Typography} from '../../theme';
-import type {ToggleLean} from '../../types';
+import type {ToggleHistory} from '../../types';
 
 // ─── Layout constants ─────────────────────────────────────────────────────────
 
 const LABEL_W = 120;
-const ROW_H = 34;
-const ROW_GAP = 8;
-const BAR_H = 8;
-const DOT_R = 4;
+const ROW_H = 28;
+const ROW_GAP = 10;
+const DOT_R = 3.5;
+const DOT_STEP = DOT_R * 2 + 3; // 10px per dot
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function barColor(lean: number): string {
-  if (lean > 0.6) return Colors.moss;
-  if (lean < 0.4) return Colors.clay;
-  return Colors.inkGhost;
-}
+const DOT_COLOR = {
+  tiger: Colors.moss,
+  donkey: Colors.clay,
+  neither: Colors.inkGhost,
+};
+
+const DOT_OPACITY = {
+  tiger: 0.85,
+  donkey: 0.85,
+  neither: 0.4,
+};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-type Props = {data: ToggleLean[]};
+type Props = {data: ToggleHistory[]};
 
 export function ToggleLeanChart({data}: Props) {
   const [barAreaW, setBarAreaW] = useState(0);
 
-  if (data.length === 0) {
+  const hasAnyData = data.some(t => t.states.length > 0);
+
+  if (!hasAnyData) {
     return (
       <View style={styles.empty}>
         <Text style={styles.emptyText}>
-          Complete a few check-ins to see your D/T toggle leans.
+          Complete a few check-ins to see your D/T toggle history.
         </Text>
       </View>
     );
   }
 
-  const cx = barAreaW / 2;
-  const maxHalf = cx - DOT_R;
-  const cy = ROW_H / 2;
-  const barY = (ROW_H - BAR_H) / 2;
+  const maxFit = barAreaW > 0 ? Math.floor(barAreaW / DOT_STEP) : 0;
 
   return (
     <View style={styles.chart}>
-      {/* Column headers */}
+      {/* Header */}
       <View style={styles.headers}>
         <View style={{width: LABEL_W}} />
         <View style={styles.headerBar}>
-          <Text style={styles.headerLabel}>Donkey</Text>
-          <Text style={styles.headerLabel}>Tiger</Text>
+          <Text style={styles.headerLabel}>older</Text>
+          <Text style={styles.headerLabel}>recent →</Text>
         </View>
       </View>
 
@@ -58,12 +63,7 @@ export function ToggleLeanChart({data}: Props) {
         style={styles.rows}
         onLayout={e => setBarAreaW(e.nativeEvent.layout.width - LABEL_W)}>
         {data.map((item, i) => {
-          const deviation = item.lean - 0.5;
-          const barW = Math.abs(deviation) * 2 * maxHalf;
-          const isTiger = deviation >= 0;
-          const barX = isTiger ? cx : cx - barW;
-          const dotX = isTiger ? cx + barW : cx - barW;
-          const color = barColor(item.lean);
+          const visible = maxFit > 0 ? item.states.slice(-maxFit) : [];
 
           return (
             <View
@@ -74,30 +74,16 @@ export function ToggleLeanChart({data}: Props) {
               </Text>
               {barAreaW > 0 && (
                 <Svg width={barAreaW} height={ROW_H}>
-                  {/* centre hairline */}
-                  <Line
-                    x1={cx}
-                    y1={0}
-                    x2={cx}
-                    y2={ROW_H}
-                    stroke={Colors.sepia}
-                    strokeWidth={1}
-                  />
-                  {/* bar */}
-                  {barW > 0 && (
-                    <Rect
-                      x={barX}
-                      y={barY}
-                      width={barW}
-                      height={BAR_H}
-                      rx={3}
-                      fill={color}
+                  {visible.map((state, j) => (
+                    <Circle
+                      key={j}
+                      cx={j * DOT_STEP + DOT_R}
+                      cy={ROW_H / 2}
+                      r={DOT_R}
+                      fill={DOT_COLOR[state]}
+                      opacity={DOT_OPACITY[state]}
                     />
-                  )}
-                  {/* end-dot */}
-                  {barW > 0 && (
-                    <Circle cx={dotX} cy={cy} r={DOT_R} fill={color} />
-                  )}
+                  ))}
                 </Svg>
               )}
             </View>

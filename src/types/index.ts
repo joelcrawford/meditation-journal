@@ -83,11 +83,17 @@ export type BeforeMindPoint = {
 export type ChipFrequency = {
   label: string;
   count: number;
+  trend: 'up' | 'stable' | 'down';
 };
 
 export type ToggleLean = {
   name: string;
   lean: number; // 0–1, 0.5 = neutral, >0.5 = tiger
+};
+
+export type ToggleHistory = {
+  name: string;
+  states: Array<'donkey' | 'tiger' | 'neither'>; // chronological, oldest first
 };
 
 export type DayArc = {

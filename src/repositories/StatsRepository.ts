@@ -6,6 +6,7 @@ import type {
   BeforeMindPoint,
   ChipFrequency,
   ToggleLean,
+  ToggleHistory,
   DayArc,
   ToggleMapPoint,
   SummaryStats,
@@ -72,11 +73,27 @@ export class StatsRepository {
     }));
   }
 
-  // Chart 2 — top 5 distraction chips by frequency
+  // Chart 2 — top 5 distraction chips by frequency, with trend vs. first half of period
   getDistractionFrequency(days: number): ChipFrequency[] {
     const from = cutoff(days);
+
+    // Find midpoint date to split historical vs recent halves
+    const dateRows = getDb().executeSync(
+      `SELECT DISTINCT date FROM sessions WHERE stage = 'complete' AND date >= ? ORDER BY date ASC`,
+      [from],
+    ).rows as {date: string}[];
+
+    const nDates = dateRows.length;
+    const midDate = nDates >= 4 ? dateRows[Math.floor(nDates / 2)].date : null;
+    const recentSessions = midDate ? nDates - Math.floor(nDates / 2) : nDates;
+    const historicalSessions = midDate ? Math.floor(nDates / 2) : 0;
+
     const rows = getDb().executeSync(
-      `SELECT c.label, COUNT(*) as count
+      `SELECT
+         c.id,
+         c.label,
+         COUNT(*) as count,
+         SUM(CASE WHEN s.date >= ? THEN 1 ELSE 0 END) as recent_count
        FROM sessions s, json_each(s.during_distractions) je
        JOIN chips c ON c.id = CAST(je.value AS INTEGER)
        WHERE s.stage = 'complete'
@@ -85,10 +102,23 @@ export class StatsRepository {
        GROUP BY c.id, c.label
        ORDER BY count DESC
        LIMIT 5`,
-      [from],
-    ).rows as ChipFrequency[];
+      [midDate ?? from, from],
+    ).rows as {id: number; label: string; count: number; recent_count: number}[];
 
-    return rows;
+    return rows.map(row => {
+      const historicalCount = row.count - row.recent_count;
+      const recentRate = recentSessions > 0 ? row.recent_count / recentSessions : 0;
+      const historicalRate = historicalSessions > 0 ? historicalCount / historicalSessions : 0;
+
+      let trend: ChipFrequency['trend'] = 'stable';
+      if (midDate && historicalSessions > 0) {
+        const ratio = historicalRate > 0 ? recentRate / historicalRate : recentRate > 0 ? 2 : 1;
+        if (ratio > 1.25) trend = 'up';
+        else if (ratio < 0.75) trend = 'down';
+      }
+
+      return {label: row.label, count: row.count, trend};
+    });
   }
 
   // Chart 3 — per-toggle D/T lean (0 = always donkey, 1 = always tiger, 0.5 = neutral)
@@ -118,6 +148,36 @@ export class StatsRepository {
       const scored = tiger + donkey;
       return {name: chip.label, lean: scored > 0 ? tiger / scored : 0.5};
     });
+  }
+
+  // Chart 3b — per-toggle D/T states in chronological order (for dot strip)
+  getToggleHistory(days: number): ToggleHistory[] {
+    const from = cutoff(days);
+    const rows = getDb().executeSync(
+      `SELECT donkey_tiger FROM checkins
+       WHERE donkey_tiger IS NOT NULL AND date >= ?
+       ORDER BY created_at ASC`,
+      [from],
+    ).rows as {donkey_tiger: string}[];
+
+    const tigerChips = Array.from(chipMap.values())
+      .filter(c => c.list_name === CHIP_LIST.DT_TIGER)
+      .sort((a, b) => a.sort_order - b.sort_order);
+
+    const statesByToggle: Array<Array<'donkey' | 'tiger' | 'neither'>> =
+      Array.from({length: 9}, () => []);
+
+    for (const row of rows) {
+      const values: DTValue[] = JSON.parse(row.donkey_tiger);
+      values.forEach((v, i) => {
+        if (i < 9) statesByToggle[i].push(v);
+      });
+    }
+
+    return tigerChips.map((chip, i) => ({
+      name: chip.label,
+      states: statesByToggle[i],
+    }));
   }
 
   // Chart 4 — spectrum river: one DayArc per date, morning/afternoon/evening dt_scores

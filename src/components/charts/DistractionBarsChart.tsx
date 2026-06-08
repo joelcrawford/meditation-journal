@@ -13,6 +13,14 @@ const ROW_GAP = 10;
 const BAR_H = 8;
 const DOT_R = 4;
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function trendColor(trend: 'up' | 'stable' | 'down'): string {
+  if (trend === 'down') return Colors.moss;    // decreasing = improving
+  if (trend === 'up') return Colors.clay;      // increasing = worsening
+  return Colors.inkGhost;                      // stable
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 type Props = {data: ChipFrequency[]};
@@ -46,6 +54,8 @@ export function DistractionBarsChart({data}: Props) {
         const cy = ROW_H / 2;
         const barY = (ROW_H - BAR_H) / 2;
 
+        const color = trendColor(item.trend);
+
         return (
           <View
             key={item.label}
@@ -71,10 +81,10 @@ export function DistractionBarsChart({data}: Props) {
                   width={filledW}
                   height={BAR_H}
                   rx={3}
-                  fill={Colors.moss}
+                  fill={color}
                 />
                 {/* end-dot */}
-                <Circle cx={filledW} cy={cy} r={DOT_R} fill={Colors.moss} />
+                <Circle cx={filledW} cy={cy} r={DOT_R} fill={color} />
               </Svg>
             )}
             <Text style={styles.count}>{item.count}×</Text>

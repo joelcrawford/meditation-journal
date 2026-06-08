@@ -26,6 +26,7 @@ type Dot = {
   cy: number;
   r: number;
   color: string;
+  baseOpacity: number;
   labelW: number;
   lx: number;
   ly: number;
@@ -46,8 +47,10 @@ function placeDots(data: ToggleMapPoint[], width: number): Dot[] {
     const cy = CHART_H - DOT_PAD - t.freq * plotH;
     const color =
       t.lean > 0.6 ? Colors.moss : t.lean < 0.4 ? Colors.clay : Colors.inkGhost;
+    // Fades when the toggle is rarely scored — high neither% = low freq
+    const baseOpacity = Math.max(0.2, 0.25 + t.freq * 0.75);
     const labelW = t.name.length * CHAR_W;
-    return {name: t.name, lean: t.lean, freq: t.freq, consistency: t.consistency, cx, cy, r, color, labelW, lx: 0, ly: 0};
+    return {name: t.name, lean: t.lean, freq: t.freq, consistency: t.consistency, cx, cy, r, color, baseOpacity, labelW, lx: 0, ly: 0};
   });
 
   const placed: Box[] = [];
@@ -206,7 +209,7 @@ export function ToggleMapChart({data}: Props) {
             const diam = d.r * 2;
             const opacity = selected
               ? selected === d.name ? 1 : DIM_OPACITY
-              : DOT_OPACITY;
+              : d.baseOpacity;
             return (
               <TouchableOpacity
                 key={`d-${d.name}`}
@@ -242,7 +245,7 @@ export function ToggleMapChart({data}: Props) {
                   : 'Neutral'}
               </Text>
               <Text style={styles.tipLine}>
-                Triggered {Math.round(selectedDot.freq * 100)}% of check-ins
+                Scored {Math.round(selectedDot.freq * 100)}% of check-ins
               </Text>
               <Text style={styles.tipLine}>
                 {Math.round(selectedDot.consistency * 100)}% consistent
