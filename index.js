@@ -47,9 +47,10 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
       JSON.stringify({screen: 'After', params: {sessionId: Number(sessionId)}}),
     );
   } else if (kind === 'timer_end' && sessionId) {
+    const elapsedSeconds = storage.getNumber('timer.elapsed') ?? 0;
     storage.set(
       'pending.navigation',
-      JSON.stringify({screen: 'After', params: {sessionId: Number(sessionId)}}),
+      JSON.stringify({screen: 'SitComplete', params: {sessionId: Number(sessionId), elapsedSeconds}}),
     );
   }
 });

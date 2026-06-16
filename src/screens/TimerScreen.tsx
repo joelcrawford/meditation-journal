@@ -8,7 +8,6 @@ import {
   AppState,
 } from 'react-native';
 import type {AppStateStatus} from 'react-native';
-import Svg, {Circle} from 'react-native-svg';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {RouteProp} from '@react-navigation/native';
@@ -29,8 +28,6 @@ type Route = RouteProp<RootStackParamList, 'Timer'>;
 type Phase = 'idle' | 'running' | 'paused';
 
 const PRESETS = [5, 10, 15, 20, 30, 45, 60];
-const RING_R = 100;
-const RING_CIRCUMFERENCE = 2 * Math.PI * RING_R;
 
 function formatCountdown(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -65,12 +62,14 @@ export function TimerScreen() {
   const endNotifIdRef = useRef<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const completedRef = useRef(false);
+  const pendingNavigateRef = useRef(false);
 
   useEffect(() => {
     bellService.loadSound().catch(() => {});
     return () => {
       bellService.unloadSound().catch(() => {});
-  // deactivateKeepAwake();
+      bellService.deactivateKeepAwake().catch(() => {});
+      bellService.stopSilentLoop().catch(() => {});
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
@@ -86,25 +85,36 @@ export function TimerScreen() {
     }
   }, []);
 
-  // Stable: deps are all refs or stable navigation/params
   const handleComplete = useCallback(() => {
     if (completedRef.current) return;
     completedRef.current = true;
     stopInterval();
     cancelEndNotification();
     endTimeRef.current = null;
-// deactivateKeepAwake();
+    bellService.deactivateKeepAwake().catch(() => {});
+    bellService.stopSilentLoop().catch(() => {});
     bellService.playBell().catch(() => {});
     liveActivityService.end().catch(() => {});
     storage.remove(STORAGE_KEYS.TIMER_STATE);
     storage.set(STORAGE_KEYS.TIMER_ELAPSED, elapsedSecRef.current);
-    navigation.replace('After', {sessionId});
+    if (AppState.currentState === 'active') {
+      navigation.replace('SitComplete', {sessionId, elapsedSeconds: elapsedSecRef.current});
+    } else {
+      // Background: defer navigation until app becomes active
+      pendingNavigateRef.current = true;
+    }
   }, [stopInterval, sessionId, navigation]);
 
-  // 1A — AppState correction: when app returns to foreground, resync countdown
+  // Resync on foreground — also picks up any navigation deferred from background completion
   useEffect(() => {
     const sub = AppState.addEventListener('change', (next: AppStateStatus) => {
-      if (next !== 'active' || endTimeRef.current === null) return;
+      if (next !== 'active') return;
+      if (pendingNavigateRef.current) {
+        pendingNavigateRef.current = false;
+        navigation.replace('SitComplete', {sessionId, elapsedSeconds: elapsedSecRef.current});
+        return;
+      }
+      if (endTimeRef.current === null) return;
       const remaining = Math.round((endTimeRef.current - Date.now()) / 1000);
       if (remaining <= 0) {
         handleComplete();
@@ -114,7 +124,7 @@ export function TimerScreen() {
       }
     });
     return () => sub.remove();
-  }, [handleComplete]);
+  }, [handleComplete, sessionId, navigation]);
 
   async function scheduleEndNotification(endMs: number) {
     const id = `timer-end-${sessionId}`;
@@ -131,14 +141,14 @@ export function TimerScreen() {
 
   function startInterval() {
     intervalRef.current = setInterval(() => {
-      elapsedSecRef.current += 1;
-      setRemainingSec(prev => {
-        if (prev <= 1) {
-          handleComplete();
-          return 0;
-        }
-        return prev - 1;
-      });
+      if (!endTimeRef.current) return;
+      const remaining = Math.max(0, Math.round((endTimeRef.current - Date.now()) / 1000));
+      elapsedSecRef.current = totalSecRef.current - remaining;
+      if (remaining <= 0) {
+        handleComplete();
+      } else {
+        setRemainingSec(remaining);
+      }
     }, 1000);
   }
 
@@ -150,8 +160,9 @@ export function TimerScreen() {
     endTimeRef.current = endMs;
     setRemainingSec(sec);
     setPhase('running');
-// activateKeepAwake(); // TODO: add native keep-awake
+    bellService.activateKeepAwake().catch(() => {});
     bellService.playBell().catch(() => {});
+    bellService.startSilentLoop().catch(() => {});
     scheduleEndNotification(endMs).catch(() => {});
     liveActivityService.start(currentObject.name, endMs).catch(() => {});
     startInterval();
@@ -161,8 +172,8 @@ export function TimerScreen() {
     stopInterval();
     cancelEndNotification();
     endTimeRef.current = null;
+    bellService.stopSilentLoop().catch(() => {});
     liveActivityService.end().catch(() => {});
-// deactivateKeepAwake();
     storage.set(STORAGE_KEYS.TIMER_STATE, JSON.stringify({
       sessionId,
       remainingSec,
@@ -176,10 +187,11 @@ export function TimerScreen() {
     storage.remove(STORAGE_KEYS.TIMER_STATE);
     const endMs = Date.now() + remainingSec * 1000;
     endTimeRef.current = endMs;
+    bellService.activateKeepAwake().catch(() => {});
+    bellService.startSilentLoop().catch(() => {});
     scheduleEndNotification(endMs).catch(() => {});
     liveActivityService.start(currentObject.name, endMs).catch(() => {});
     setPhase('running');
-// activateKeepAwake(); // TODO: add native keep-awake
     startInterval();
   }
 
@@ -198,6 +210,8 @@ export function TimerScreen() {
     stopInterval();
     cancelEndNotification();
     endTimeRef.current = null;
+    bellService.deactivateKeepAwake().catch(() => {});
+    bellService.stopSilentLoop().catch(() => {});
     liveActivityService.end().catch(() => {});
     storage.remove(STORAGE_KEYS.TIMER_STATE);
     storage.set(STORAGE_KEYS.TIMER_ELAPSED, elapsedSecRef.current);
@@ -208,8 +222,9 @@ export function TimerScreen() {
     stopInterval();
     cancelEndNotification();
     endTimeRef.current = null;
+    bellService.deactivateKeepAwake().catch(() => {});
+    bellService.stopSilentLoop().catch(() => {});
     liveActivityService.end().catch(() => {});
-// deactivateKeepAwake();
     storage.remove(STORAGE_KEYS.TIMER_STATE);
     sessionService.deleteSession(sessionId);
     notificationService.cancelIncompleteSessionFollowUp(sessionId).catch(() => {});
@@ -225,9 +240,6 @@ export function TimerScreen() {
   function adjustDuration(delta: number) {
     setDurationMin(prev => Math.min(180, Math.max(1, prev + delta)));
   }
-
-  const progress = totalSecRef.current > 0 ? remainingSec / totalSecRef.current : 1;
-  const strokeDashoffset = RING_CIRCUMFERENCE * (1 - progress);
 
   if (phase === 'idle') {
     return (
@@ -285,61 +297,31 @@ export function TimerScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <View style={styles.runningContent}>
-
-        {/* Progress ring */}
-        <View style={styles.ringWrapper}>
-          <Svg width={240} height={240} style={styles.ring}>
-            <Circle cx={120} cy={120} r={RING_R} stroke={Colors.sepia} strokeWidth={6} fill="none" />
-            <Circle
-              cx={120} cy={120} r={RING_R}
-              stroke={phase === 'paused' ? Colors.inkGhost : Colors.moss}
-              strokeWidth={6} fill="none"
-              strokeDasharray={RING_CIRCUMFERENCE}
-              strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-              rotation={-90} origin="120, 120"
-            />
-          </Svg>
-          <View style={styles.ringCenter}>
-            <Text style={styles.countdown}>{formatCountdown(remainingSec)}</Text>
-            {phase === 'paused' && (
-              <Text style={styles.pausedLabel}>paused</Text>
-            )}
-          </View>
-        </View>
-
-        {/* Controls — differ by phase */}
+    <SafeAreaView style={styles.darkSafe} edges={['top', 'bottom']}>
+      <View style={styles.darkContent}>
+        <Text style={styles.darkCountdown}>{formatCountdown(remainingSec)}</Text>
+        {phase === 'paused' && (
+          <Text style={styles.darkPausedLabel}>paused</Text>
+        )}
         {phase === 'running' ? (
-          <View style={styles.controlRow}>
-            <TouchableOpacity style={styles.adjBtn} onPress={() => handleAdjustRunning(-1)}>
-              <Text style={styles.adjBtnText}>−1 min</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.pauseBtn} onPress={handlePause}>
-              <Text style={styles.pauseBtnText}>⏸</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.adjBtn} onPress={() => handleAdjustRunning(1)}>
-              <Text style={styles.adjBtnText}>+1 min</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity style={styles.darkControlPill} onPress={handlePause}>
+            <Text style={styles.darkControlPillText}>pause</Text>
+          </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={styles.resumeBtn} onPress={handleResume}>
-            <Text style={styles.resumeBtnText}>▶  Resume</Text>
+          <TouchableOpacity style={[styles.darkControlPill, styles.darkControlPillActive]} onPress={handleResume}>
+            <Text style={[styles.darkControlPillText, styles.darkControlPillTextActive]}>resume</Text>
           </TouchableOpacity>
         )}
+      </View>
 
-        {/* Bottom actions — always visible */}
-        <View style={styles.bottomLinks}>
-          <TouchableOpacity onPress={handleFinishEarly}>
-            <Text style={styles.finishText}>Finish sit</Text>
-          </TouchableOpacity>
-          <Text style={styles.linkDivider}>·</Text>
-          <TouchableOpacity onPress={handleDiscard}>
-            <Text style={styles.discardText}>Discard</Text>
-          </TouchableOpacity>
-        </View>
-
+      <View style={styles.darkBottom}>
+        <TouchableOpacity onPress={handleFinishEarly}>
+          <Text style={styles.darkBottomLink}>Finish sit</Text>
+        </TouchableOpacity>
+        <Text style={styles.darkBottomDot}>·</Text>
+        <TouchableOpacity onPress={handleDiscard}>
+          <Text style={styles.darkBottomLink}>Discard</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -451,90 +433,64 @@ const styles = StyleSheet.create({
 
   hint: {...Typography.caption, textAlign: 'center'},
 
-  runningContent: {
+  darkSafe: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  darkContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: Spacing.sp6,
+    gap: Spacing.sp5,
   },
-
-  ringWrapper: {width: 240, height: 240, justifyContent: 'center', alignItems: 'center'},
-  ring: {position: 'absolute'},
-  ringCenter: {justifyContent: 'center', alignItems: 'center'},
-  countdown: {
+  darkCountdown: {
     fontFamily: 'Fraunces-Regular',
-    fontSize: 52,
-    color: Colors.ink,
-    letterSpacing: -1,
+    fontSize: 80,
+    lineHeight: 88,
+    color: Colors.paper,
+    letterSpacing: -2,
   },
-
-  controlRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 24,
+  darkPausedLabel: {
+    fontFamily: 'Newsreader-Regular',
+    fontSize: 11,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    color: 'rgba(244,239,230,0.35)',
+    marginTop: -Spacing.sp3,
   },
-  adjBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+  darkControlPill: {
+    paddingHorizontal: 28,
+    paddingVertical: 11,
     borderRadius: Radius.pill,
     borderWidth: 1,
-    borderColor: Colors.sepia,
-    backgroundColor: Colors.paperCard,
+    borderColor: 'rgba(244,239,230,0.18)',
   },
-  adjBtnText: {fontFamily: 'Newsreader-Medium', fontSize: 14, color: Colors.inkSoft},
-
-  pauseBtn: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Colors.moss,
-    justifyContent: 'center',
-    alignItems: 'center',
+  darkControlPillActive: {
+    borderColor: 'rgba(244,239,230,0.5)',
   },
-  pauseBtnText: {fontSize: 22, color: Colors.mossPale},
-
-  pausedLabel: {
+  darkControlPillText: {
     fontFamily: 'Newsreader-Regular',
-    fontSize: 13,
-    color: Colors.inkFaint,
-    letterSpacing: 1,
-    marginTop: 4,
+    fontSize: 15,
+    color: 'rgba(244,239,230,0.45)',
   },
-
-  resumeBtn: {
-    backgroundColor: Colors.moss,
-    borderRadius: Radius.md,
-    paddingVertical: 16,
-    paddingHorizontal: 40,
-    alignItems: 'center',
+  darkControlPillTextActive: {
+    color: Colors.paper,
   },
-  resumeBtnText: {
-    fontFamily: 'Newsreader-Medium',
-    fontSize: 17,
-    color: Colors.mossPale,
-  },
-
-  bottomLinks: {
+  darkBottom: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 10,
-    marginTop: Spacing.sp2,
+    paddingBottom: Spacing.sp6,
   },
-  finishText: {
+  darkBottomLink: {
     fontFamily: 'Newsreader-Regular',
-    fontSize: 14,
-    color: Colors.moss,
-    textDecorationLine: 'underline',
+    fontSize: 13,
+    color: 'rgba(244,239,230,0.25)',
   },
-  linkDivider: {
+  darkBottomDot: {
     fontFamily: 'Newsreader-Regular',
-    fontSize: 14,
-    color: Colors.sepia,
-  },
-  discardText: {
-    fontFamily: 'Newsreader-Regular',
-    fontSize: 14,
-    color: Colors.clay,
-    textDecorationLine: 'underline',
+    fontSize: 13,
+    color: 'rgba(244,239,230,0.15)',
   },
 });

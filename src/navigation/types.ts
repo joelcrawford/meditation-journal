@@ -2,6 +2,7 @@ export type RootStackParamList = {
   Home: undefined;
   Before: undefined;
   Timer: {sessionId: number};
+  SitComplete: {sessionId: number; elapsedSeconds: number};
   After: {sessionId: number};
   CheckinModal: {checkinType: 'morning' | 'afternoon' | 'evening'};
   CheckinResult: {

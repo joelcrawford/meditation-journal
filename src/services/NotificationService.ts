@@ -140,13 +140,14 @@ class NotificationService {
   }
 
   async scheduleTimerEnd(sessionId: number, notifId: string, endMs: number): Promise<void> {
+    const stem = storage.getString(STORAGE_KEYS.BELL_SOUND) ?? 'tibetan-bowl';
     await notifee.createTriggerNotification(
       {
         id: notifId,
         title: 'Sit complete',
         body: 'Your timer has ended. Tap to record your session.',
         data: {sessionId: String(sessionId), kind: 'timer_end'},
-        ios: {sound: 'tibetan-bowl.mp3'},
+        ios: {sound: `${stem}.mp3`},
         android: {channelId: CHANNEL_ID},
       },
       {type: TriggerType.TIMESTAMP, timestamp: endMs},

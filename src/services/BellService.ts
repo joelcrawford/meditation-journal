@@ -15,6 +15,22 @@ class BellService {
     if (BellSound?.play) await BellSound.play(stem);
   }
 
+  async activateKeepAwake(): Promise<void> {
+    if (BellSound?.activateKeepAwake) await BellSound.activateKeepAwake();
+  }
+
+  async deactivateKeepAwake(): Promise<void> {
+    if (BellSound?.deactivateKeepAwake) await BellSound.deactivateKeepAwake();
+  }
+
+  async startSilentLoop(): Promise<void> {
+    if (BellSound?.startSilentLoop) await BellSound.startSilentLoop();
+  }
+
+  async stopSilentLoop(): Promise<void> {
+    if (BellSound?.stopSilentLoop) await BellSound.stopSilentLoop();
+  }
+
   async unloadSound(): Promise<void> {}
 }
 

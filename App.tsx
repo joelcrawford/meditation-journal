@@ -53,7 +53,8 @@ export default function App() {
         } else if (kind === 'incomplete_session' && sessionId) {
           navigationRef.current?.navigate('After', {sessionId: Number(sessionId)});
         } else if (kind === 'timer_end' && sessionId) {
-          navigationRef.current?.navigate('After', {sessionId: Number(sessionId)});
+          const elapsed = storage.getNumber(STORAGE_KEYS.TIMER_ELAPSED) ?? 0;
+          navigationRef.current?.navigate('SitComplete', {sessionId: Number(sessionId), elapsedSeconds: elapsed});
         }
       } else if (type === EventType.ACTION_PRESS) {
         const actionId = detail.pressAction?.id;
