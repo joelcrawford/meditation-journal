@@ -66,11 +66,7 @@ export function HomeScreen() {
   const navigation = useNavigation<Nav>();
   const {sessions, setSessions, checkins, setCheckins, streak, currentObject, activeProfile, refresh} = useHomeData();
 
-  const isFirstRun =
-    sessions.length === 0 &&
-    checkins.morning === null &&
-    checkins.afternoon === null &&
-    checkins.evening === null;
+  const isFirstRun = statsRepository.getTotalSits() === 0;
 
   const todayStatus = sessionService.getTodayStatus();
 
