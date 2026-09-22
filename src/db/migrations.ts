@@ -5,6 +5,18 @@ interface Migration {
   up: (db: DB) => void;
 }
 
+// Mirrors the dt_tiger chip sort_order swap (1<->2, 3<->4) applied in
+// migration 3 onto a positionally-indexed donkey_tiger checkin array, so a
+// historical tap stays attached to the label the user actually saw.
+// Exported for unit testing — a plain transposition, so applying it twice
+// restores the original (pre-fix) order.
+export function swapTransposedDonkeyTigerPositions<T>(values: T[]): T[] {
+  const next = [...values];
+  [next[1], next[2]] = [next[2], next[1]];
+  [next[3], next[4]] = [next[4], next[3]];
+  return next;
+}
+
 export const MIGRATIONS: Migration[] = [
   {
     version: 1,
@@ -210,6 +222,81 @@ export const MIGRATIONS: Migration[] = [
           [label],
         ),
       );
+    },
+  },
+  {
+    version: 3,
+    up: (db: DB) => {
+      // Fix dt_tiger rows transposed onto the wrong dt_donkey row at seed time
+      // (sort_order 1<->2 and 3<->4). See issue #28. Wrapped in a transaction
+      // so a mid-migration failure can't leave chips and historical checkins
+      // out of sync with each other, or flip-flop on retry.
+      db.executeSync('BEGIN TRANSACTION;');
+      try {
+        const already = (
+          db.executeSync(
+            `SELECT sort_order FROM chips WHERE list_name = 'dt_tiger' AND label = ?`,
+            ['I noticed thoughts arising and passing'],
+          ).rows[0] as {sort_order: number} | undefined
+        )?.sort_order;
+
+        // Both the chip re-labeling (idempotent — sets absolute values) and
+        // the checkins swap below (a transposition — NOT idempotent, applying
+        // it twice restores the bug) have already run if this chip has
+        // already moved to sort_order 2. Re-running here would flip every
+        // already-fixed checkin back to the wrong pairing.
+        if (already === 2) {
+          db.executeSync('COMMIT;');
+          return;
+        }
+
+        const swaps: [string, number][] = [
+          ['I noticed thoughts arising and passing', 2],
+          ['I saw emotions as movements, not identity', 1],
+          ['I remembered I can plant different causes', 4],
+          ['I paused before fully believing the story', 3],
+        ];
+
+        swaps.forEach(([label, sort_order]) =>
+          db.executeSync(
+            `UPDATE chips SET sort_order = ? WHERE list_name = 'dt_tiger' AND label = ?`,
+            [sort_order, label],
+          ),
+        );
+
+        // Existing checkins store donkey/tiger taps positionally (index into
+        // the dt_tiger/dt_donkey sort order), and stats charts re-derive each
+        // tap's label from the *current* chip sort_order. Since the chip
+        // pairing above just changed at indices 1/2 and 3/4, already-recorded
+        // taps at those positions must move with it, or historical entries
+        // would silently be relabeled to a topic the user never actually saw.
+        const rows = db.executeSync(
+          `SELECT id, donkey_tiger FROM checkins WHERE donkey_tiger IS NOT NULL`,
+        ).rows as {id: number; donkey_tiger: string}[];
+
+        rows.forEach(({id, donkey_tiger}) => {
+          let values: string[];
+          try {
+            values = JSON.parse(donkey_tiger);
+          } catch {
+            console.warn(`migration 3: skipping unparseable checkin ${id}`);
+            return;
+          }
+          if (values.length !== 9) {
+            console.warn(`migration 3: skipping malformed checkin ${id}`);
+            return;
+          }
+          db.executeSync(`UPDATE checkins SET donkey_tiger = ? WHERE id = ?`, [
+            JSON.stringify(swapTransposedDonkeyTigerPositions(values)),
+            id,
+          ]);
+        });
+
+        db.executeSync('COMMIT;');
+      } catch (e) {
+        db.executeSync('ROLLBACK;');
+        throw e;
+      }
     },
   },
 ];
