@@ -83,7 +83,18 @@ track streaks, and view stats charts.
 
 ## Workflow
 
-Before writing code, create or reference a GitHub issue with acceptance
-criteria. Branch as `agent/<issue#>-<slug>`. PR body must say `Closes #N`.
-Work happens on `agent/*` branches — never commit or push directly to
-`main`.
+Which rules apply depends on how the session was started.
+
+**Autonomous runs** — an agent from Discord or any other pipeline, no human in
+the loop: create or reference a GitHub issue with acceptance criteria, fetch
+and branch from the current `origin/main` as `agent/<issue#>-<slug>`, work only
+on `agent/*` branches, never commit or push to `main`, and open a PR whose body
+says `Closes #N`. Post the issue and the PR as full clickable URLs; the owner
+merges.
+
+**Interactive sessions** — the owner at the keyboard: fetch and fast-forward
+`main`, branch as `feature/*`, `fix/*` or `refactor/*` (`agent/*` is reserved
+for the bot), work, commit, merge into `main` locally, push. No pull request,
+and never hand over a GitHub compare URL. `npm test` passes before the commit.
+Pushing `main` runs CI only — nothing here deploys, and the TestFlight build
+stays a separate owner-only step.
